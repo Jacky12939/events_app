@@ -1,98 +1,322 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+#  Event Management API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+API REST de gestion d'événements construite avec **NestJS**, **Prisma**, **PostgreSQL** et sécurisée avec **JWT + Bcrypt**.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+---
 
-## Description
+## Stack technique
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+| Technologie     | Rôle                          |
+|----------------|-------------------------------|
+| NestJS 11       | Framework backend              |
+| Prisma 6        | ORM / accès base de données   |
+| PostgreSQL      | Base de données relationnelle |
+| JWT (Passport)  | Authentification stateless    |
+| Bcrypt          | Hachage des mots de passe     |
+| QRCode          | Génération de billets QR      |
+| Swagger         | Documentation API interactive |
+| class-validator | Validation des DTOs           |
 
-## Project setup
+---
 
-```bash
-$ npm install
+##  Rôles utilisateurs
+
+| Rôle          | Description                                                   |
+|--------------|---------------------------------------------------------------|
+| `ADMIN`       | Tous les droits. Crée les organisateurs.                     |
+| `ORGANIZER`   | Crée, modifie, supprime ses événements. Voit son dashboard.  |
+| `PARTICIPANT` | S'inscrit aux événements, reçoit un billet avec QR Code.     |
+
+---
+
+##  Structure du projet
+
+```
+backend/
+├── .env
+├── package.json
+├── prisma/
+│   ├── schema.prisma
+│   └── seed.ts
+└── src/
+    ├── main.ts
+    ├── app.module.ts
+    ├── prisma/
+    │   ├── prisma.service.ts
+    │   └── prisma.module.ts
+    ├── auth/
+    │   ├── dto/
+    │   │   ├── register.dto.ts
+    │   │   └── login.dto.ts
+    │   ├── strategies/
+    │   │   └── jwt.strategy.ts
+    │   ├── guards/
+    │   │   ├── jwt-auth.guard.ts
+    │   │   └── roles.guard.ts
+    │   ├── decorators/
+    │   │   ├── roles.decorator.ts
+    │   │   └── current-user.decorator.ts
+    │   ├── auth.service.ts
+    │   ├── auth.controller.ts
+    │   └── auth.module.ts
+    ├── users/
+    │   ├── users.service.ts
+    │   ├── users.controller.ts
+    │   └── users.module.ts
+    ├── events/
+    │   ├── dto/
+    │   │   ├── create-event.dto.ts
+    │   │   ├── update-event.dto.ts
+    │   │   └── filter-event.dto.ts
+    │   ├── events.service.ts
+    │   ├── events.controller.ts
+    │   └── events.module.ts
+    └── registrations/
+        ├── registrations.service.ts
+        ├── registrations.controller.ts
+        └── registrations.module.ts
 ```
 
-## Compile and run the project
+---
+
+##  Installation
+
+### Prérequis
+
+- Node.js >= 18
+- PostgreSQL en cours d'exécution
+- npm ou yarn
+
+### 1. Cloner et installer les dépendances
 
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+cd backend
+npm install
 ```
 
-## Run tests
+### 2. Configurer les variables d'environnement
+
+Modifier le fichier `.env` à la racine :
+
+```env
+DATABASE_URL="postgresql://postgres:VOTRE_MOT_DE_PASSE@localhost:5432/event_app?schema=public"
+JWT_SECRET="votre_secret_jwt_tres_long_et_securise"
+JWT_EXPIRES_IN="7d"
+PORT=3000
+```
+
+### 3. Migrer la base de données
 
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+npx prisma migrate dev --name init
+npx prisma generate
 ```
 
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+### 4. Seeder l'administrateur et les catégories
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npx ts-node prisma/seed.ts
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+Identifiants admin créés :
+- **Email** : `admin@eventapp.com`
+- **Mot de passe** : `Admin@1234`
 
-## Resources
+### 5. Lancer l'application
 
-Check out a few resources that may come in handy when working with NestJS:
+```bash
+# Développement (hot reload)
+npm run start:dev
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+# Production
+npm run build
+npm run start:prod
+```
 
-## Support
+---
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+##  Documentation Swagger
 
-## Stay in touch
+Une fois l'application lancée, la documentation interactive est disponible sur :
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```
+http://localhost:3000/api/docs
+```
 
-## License
+> Pour tester les routes protégées : cliquez sur **Authorize** en haut à droite et entrez votre token JWT sous la forme `Bearer `.
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
+---
+
+##  Routes API
+
+###  Auth — `/api/auth`
+
+| Méthode | Route                        | Description                         | Accès      |
+|---------|------------------------------|-------------------------------------|------------|
+| POST    | `/auth/register`             | Inscription d'un participant        | Public     |
+| POST    | `/auth/login`                | Connexion et récupération du token  | Public     |
+| POST    | `/auth/admin/create-organizer` | Créer un compte organisateur      | ADMIN      |
+
+### 👤 Users — `/api/users`
+
+| Méthode | Route       | Description                        | Accès      |
+|---------|------------|-------------------------------------|------------|
+| GET     | `/users/me` | Récupérer le profil connecté        | Authentifié |
+| GET     | `/users`    | Lister tous les utilisateurs        | ADMIN      |
+
+###  Events — `/api/events`
+
+| Méthode | Route                          | Description                                   | Accès       |
+|---------|-------------------------------|-----------------------------------------------|-------------|
+| GET     | `/events`                      | Événements publiés (filtres disponibles)      | Public      |
+| GET     | `/events/:id`                  | Détail d'un événement                         | Public      |
+| GET     | `/events/organizer/dashboard`  | Dashboard stats de l'organisateur             | ORGANIZER   |
+| GET     | `/events/organizer/my-events`  | Mes événements avec filtres                   | ORGANIZER   |
+| POST    | `/events`                      | Créer un événement                            | ORGANIZER   |
+| PATCH   | `/events/:id`                  | Modifier un événement                         | ORGANIZER   |
+| DELETE  | `/events/:id`                  | Supprimer un événement                        | ORGANIZER   |
+
+#### Paramètres de filtrage (query params) pour `GET /events` :
+
+| Paramètre    | Type   | Description                    |
+|-------------|--------|-------------------------------|
+| `title`      | string | Recherche par titre (insensible à la casse) |
+| `location`   | string | Filtrer par localisation       |
+| `categoryId` | string | Filtrer par catégorie (UUID)   |
+| `dateFrom`   | string | Date de début minimum (ISO)    |
+| `dateTo`     | string | Date de début maximum (ISO)    |
+
+###  Registrations — `/api/registrations`
+
+| Méthode | Route                                    | Description                           | Accès       |
+|---------|------------------------------------------|---------------------------------------|-------------|
+| POST    | `/registrations/events/:eventId`         | S'inscrire à un événement             | PARTICIPANT |
+| GET     | `/registrations/my`                      | Mes inscriptions et billets           | PARTICIPANT |
+| GET     | `/registrations/:id/ticket`              | Récupérer un billet avec QR Code      | PARTICIPANT |
+| DELETE  | `/registrations/events/:eventId`         | Se désinscrire d'un événement         | PARTICIPANT |
+| GET     | `/registrations/events/:eventId/participants` | Liste des participants          | ORGANIZER   |
+
+---
+
+##  Sécurité
+
+### Authentification JWT
+
+- Le token est généré lors de la connexion (`/auth/login`) ou l'inscription (`/auth/register`)
+- Durée de validité configurable via `JWT_EXPIRES_IN` (défaut : `7d`)
+- À envoyer dans chaque requête protégée via le header :
+
+```
+Authorization: Bearer 
+```
+
+### Gestion des erreurs
+
+| Code HTTP | Cas                                          |
+|-----------|----------------------------------------------|
+| `400`     | Données invalides ou inscription en doublon  |
+| `401`     | Token absent, invalide ou expiré             |
+| `403`     | Rôle insuffisant pour cette action           |
+| `404`     | Ressource introuvable                        |
+| `409`     | Email déjà utilisé lors de l'inscription     |
+
+### Hachage des mots de passe
+
+Les mots de passe sont hachés avec **bcrypt** (salt rounds : 12) avant stockage. Ils ne sont jamais retournés dans les réponses API.
+
+---
+
+##  Système de billets
+
+Lors de l'inscription à un événement publié, le système :
+
+1. Vérifie que l'événement est **publié** et que des **places sont disponibles**
+2. Vérifie que le participant n'est **pas déjà inscrit**
+3. Génère un **code de billet unique** (UUID v4)
+4. Génère un **QR Code en base64** encodant : code du billet, titre de l'événement, ID participant
+5. Retourne le billet complet avec le QR Code prêt à l'affichage
+
+---
+
+## Statuts des événements
+
+| Statut      | Description                                      |
+|------------|--------------------------------------------------|
+| `DRAFT`     | Brouillon, non visible par les participants      |
+| `PUBLISHED` | Publié, visible et ouvert aux inscriptions       |
+| `CANCELLED` | Annulé, plus d'inscriptions possibles           |
+
+---
+
+## Commandes utiles
+
+```bash
+# Générer le client Prisma après modification du schéma
+npx prisma generate
+
+# Créer une nouvelle migration
+npx prisma migrate dev --name nom_de_la_migration
+
+# Ouvrir Prisma Studio (interface visuelle DB)
+npx prisma studio
+
+# Lancer le seed
+npx ts-node prisma/seed.ts
+
+# Formater le code
+npm run format
+
+# Build production
+npm run build
+```
+
+---
+
+## 📝 Exemple d'utilisation
+
+### 1. Connexion Admin
+
+```bash
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@eventapp.com","password":"Admin@1234"}'
+```
+
+### 2. Créer un organisateur (avec le token admin)
+
+```bash
+curl -X POST http://localhost:3000/api/auth/admin/create-organizer \
+  -H "Authorization: Bearer " \
+  -H "Content-Type: application/json" \
+  -d '{"email":"org@test.com","firstName":"Paul","lastName":"Biya","password":"Org@1234"}'
+```
+
+### 3. Créer un événement (avec le token organisateur)
+
+```bash
+curl -X POST http://localhost:3000/api/events \
+  -H "Authorization: Bearer " \
+  -H "Content-Type: application/json" \
+  -d '{
+    "title": "Festival de Jazz de Douala",
+    "description": "Grand festival annuel",
+    "location": "Douala, Cameroun",
+    "startDate": "2025-08-15T09:00:00Z",
+    "endDate": "2025-08-17T23:00:00Z",
+    "capacity": 500,
+    "status": "PUBLISHED"
+  }'
+```
+
+### 4. Inscription d'un participant
+
+```bash
+curl -X POST http://localhost:3000/api/registrations/events/ \
+  -H "Authorization: Bearer "
+```
+
+---
+
+##  Auteur
+
+Projet généré avec NestJS CLI — Architecture modulaire, sécurisée et prête pour la production.

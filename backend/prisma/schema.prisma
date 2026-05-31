@@ -1,3 +1,4 @@
+// prisma/schema.prisma
 
 generator client {
   provider = "prisma-client-js"
@@ -5,12 +6,13 @@ generator client {
 
 datasource db {
   provider = "postgresql"
- 
+  url      = env("DATABASE_URL")
 }
 
 enum Role {
-  attendee
-  organizer
+  ADMIN
+  ORGANIZER
+  PARTICIPANT
 }
 
 enum EventStatus {
@@ -21,61 +23,57 @@ enum EventStatus {
 
 model User {
   id        String   @id @default(uuid())
-
-  nom       String
-  prenom    String
-
   email     String   @unique
   password  String
-
-  role      Role     @default(attendee)
-
-  // Relations
-  events    Event[]
-  registrations Registration[]
-
+  firstName String
+  lastName  String
+  role      Role     @default(PARTICIPANT)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // Relations
+  organizedEvents Event[]        @relation("OrganizerEvents")
+  registrations   Registration[]
+}
+
+model Category {
+  id     String  @id @default(uuid())
+  name   String  @unique
+  events Event[]
 }
 
 model Event {
   id          String      @id @default(uuid())
-
   title       String
   description String
-
-  date        DateTime
-  time        String
-
   location    String
-  category    String
-
-  price       Float       @default(0)
-  capacity    Int
-
-  image       String?
-
+  startDate   DateTime
+  endDate     DateTime
   status      EventStatus @default(DRAFT)
+  capacity    Int
+  imageUrl    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
 
-  organizerId String
-  organizer   User @relation(fields: [organizerId], references: [id])
-
-  registrations Registration[]  
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  // Relations
+  organizer     User           @relation("OrganizerEvents", fields: [organizerId], references: [id])
+  organizerId   String
+  category      Category?      @relation(fields: [categoryId], references: [id])
+  categoryId    String?
+  registrations Registration[]
 }
 
 model Registration {
   id         String   @id @default(uuid())
+  ticketCode String   @unique @default(uuid())
+  qrCode     String   // base64 QR code image
+  createdAt  DateTime @default(now())
 
-  userId     String
-  eventId    String
+  // Relations
+  participant   User   @relation(fields: [participantId], references: [id])
+  participantId String
+  event         Event  @relation(fields: [eventId], references: [id])
+  eventId       String
 
-  ticketCode String   @unique
-
-  user        User    @relation(fields: [userId], references: [id])
-  event       Event   @relation(fields: [eventId], references: [id])
-
-  createdAt   DateTime @default(now())
+  @@unique([participantId, eventId]) // Un participant = une inscription par event
 }
