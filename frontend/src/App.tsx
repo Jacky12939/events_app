@@ -3,6 +3,7 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import MyTicket from "./pages/MyTicket";
 import ParticipantEvents from "./pages/ParticipantEvents";
+import OrganizerPage from "./pages/OrganizerPage";
 
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
   const token = localStorage.getItem("token");
@@ -21,6 +22,9 @@ export default function App() {
         } />
         <Route path="/my-tickets" element={
           <PrivateRoute><MyTicket /></PrivateRoute>
+        } />
+        <Route path="/organizer" element={
+          <PrivateRoute><OrganizerPage /></PrivateRoute>
         } />
       </Routes>
     </BrowserRouter>
