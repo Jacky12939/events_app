@@ -1,0 +1,417 @@
+/* ── EventList ── */
+@import url("https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap");
+
+:root {
+  --bg: #0a0b0f;
+  --surface: #12141a;
+  --surface2: #1a1d26;
+  --border: rgba(255, 255, 255, 0.07);
+  --accent: #00e5a0;
+  --accent2: #7c6fff;
+  --text: #e8eaf0;
+  --muted: #6b7080;
+  --radius: 16px;
+}
+
+.el-root {
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+}
+
+/* ── Hero ── */
+.el-hero {
+  position: relative;
+  padding: 96px 24px 72px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.el-hero-bg {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(
+      ellipse 70% 60% at 50% -10%,
+      rgba(124, 111, 255, 0.18) 0%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 40% 40% at 80% 80%,
+      rgba(0, 229, 160, 0.08) 0%,
+      transparent 60%
+    );
+  pointer-events: none;
+}
+
+.el-hero-content {
+  position: relative;
+  max-width: 640px;
+  margin: 0 auto;
+}
+
+.el-hero-eyebrow {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.el-hero-title {
+  font-family: "Syne", sans-serif;
+  font-size: clamp(42px, 7vw, 72px);
+  font-weight: 800;
+  line-height: 1.05;
+  margin-bottom: 16px;
+  color: #fff;
+}
+.el-hero-title em {
+  font-style: normal;
+  color: var(--accent);
+}
+
+.el-hero-sub {
+  font-size: 16px;
+  color: var(--muted);
+  margin-bottom: 36px;
+  line-height: 1.6;
+}
+
+/* Search */
+.el-search-wrap {
+  position: relative;
+  max-width: 480px;
+  margin: 0 auto;
+}
+.el-search-icon {
+  position: absolute;
+  left: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted);
+  pointer-events: none;
+}
+.el-search {
+  width: 100%;
+  padding: 14px 16px 14px 44px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+  font-size: 15px;
+  outline: none;
+  transition:
+    border-color 0.2s,
+    box-shadow 0.2s;
+  box-sizing: border-box;
+}
+.el-search:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(0, 229, 160, 0.1);
+}
+.el-search::placeholder {
+  color: var(--muted);
+}
+
+/* ── Main ── */
+.el-main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px 80px;
+}
+
+/* ── Filters ── */
+.el-filters {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px 0 24px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 28px;
+}
+
+.el-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.el-filter-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.el-chips {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.el-chip {
+  padding: 6px 14px;
+  border-radius: 50px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-size: 13px;
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.el-chip:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+.el-chip.active {
+  background: rgba(0, 229, 160, 0.12);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.el-date-input {
+  padding: 6px 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.el-date-input:focus {
+  border-color: var(--accent);
+}
+
+.el-clear {
+  margin-left: auto;
+  padding: 6px 14px;
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #ef4444;
+  font-size: 12px;
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  transition: all 0.18s;
+}
+.el-clear:hover {
+  background: rgba(239, 68, 68, 0.2);
+}
+
+.el-count {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 24px;
+}
+
+/* ── States ── */
+.el-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 80px 24px;
+  color: var(--muted);
+  font-size: 15px;
+}
+.el-error {
+  color: #ef4444;
+}
+
+.el-spinner {
+  width: 36px;
+  height: 36px;
+  border: 3px solid var(--surface2);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.el-retry {
+  padding: 8px 20px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.el-retry:hover {
+  border-color: var(--accent);
+}
+
+.el-empty-icon {
+  font-size: 48px;
+}
+
+/* ── Grid ── */
+.el-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+}
+
+/* ── EventCard ── */
+.event-card {
+  display: block;
+  text-decoration: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition:
+    transform 0.22s,
+    border-color 0.22s,
+    box-shadow 0.22s;
+  animation: fadeUp 0.4s ease both;
+  color: var(--text);
+}
+.event-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(0, 229, 160, 0.3);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.card-image {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+  background: var(--surface2);
+}
+.card-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s;
+}
+.event-card:hover .card-image img {
+  transform: scale(1.04);
+}
+
+.card-image-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, var(--surface2) 0%, #1e2130 100%);
+  font-family: "Syne", sans-serif;
+  font-size: 56px;
+  font-weight: 800;
+  color: rgba(255, 255, 255, 0.06);
+}
+
+.card-status-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 4px 10px;
+  border-radius: 50px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  backdrop-filter: blur(8px);
+}
+
+.card-body {
+  padding: 20px;
+}
+
+.card-title {
+  font-family: "Syne", sans-serif;
+  font-size: 17px;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 12px;
+  line-height: 1.3;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.meta-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.card-desc {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-bottom: 16px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* Capacity */
+.capacity-section {
+  margin-top: 16px;
+}
+.capacity-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 6px;
+}
+.full-tag {
+  padding: 2px 8px;
+  background: rgba(239, 68, 68, 0.12);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+  border-radius: 50px;
+  color: #ef4444;
+  font-size: 10px;
+}
+.capacity-track {
+  height: 4px;
+  background: var(--surface2);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.capacity-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.6s ease;
+}
