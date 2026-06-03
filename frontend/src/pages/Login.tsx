@@ -18,9 +18,9 @@ export default function Login() {
       const data = await login(form.email, form.password);
       const role = data.user?.role;
       if (role === "ORGANIZER" || role === "ADMIN") {
-        navigate("/organizer");
+        navigate("/dashboard");
       } else {
-        navigate("/events");
+        navigate("/dashboard");
       }
     } catch (err: any) {
       setError(err.response?.data?.message || "Identifiants incorrects");
