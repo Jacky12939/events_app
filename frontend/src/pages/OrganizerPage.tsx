@@ -24,7 +24,7 @@ export default function OrganizerPage() {
   const [showParticipants, setShowParticipants] = useState(false);
   const [selectedEventTitle, setSelectedEventTitle] = useState("");
   const [form, setForm] = useState({
-    title: "", description: "", date: "",
+    title: "", description: "", startDate: "", endDate: "",
     location: "", capacity: ""
   });
 
@@ -41,7 +41,7 @@ export default function OrganizerPage() {
 
   const openCreate = () => {
     setEditingEvent(null);
-    setForm({ title: "", description: "", date: "", location: "", capacity: "" });
+    setForm({ title: "", description: "", startDate: "", endDate: "", location: "", capacity: "" });
     setShowForm(true);
   };
 
@@ -49,7 +49,7 @@ export default function OrganizerPage() {
     setEditingEvent(evt);
     setForm({
       title: evt.title, description: evt.description || "",
-      date: evt.date?.split("T")[0], location: evt.location,
+      startDate: evt.startDate?.split("T")[0], endDate: evt.endDate?.split("T")[0], location: evt.location,
       capacity: String(evt.capacity)
     });
     setShowForm(true);
@@ -170,8 +170,8 @@ export default function OrganizerPage() {
           <TextField label="Description" fullWidth multiline rows={3}
             value={form.description}
             onChange={e => setForm({ ...form, description: e.target.value })} />
-          <TextField label="Date" type="date" fullWidth value={form.date}
-            onChange={e => setForm({ ...form, date: e.target.value })}
+          <TextField label="Date" type="date" fullWidth value={form.startDate}
+            onChange={e => setForm({ ...form, startDate: e.target.value })}
             InputLabelProps={{ shrink: true }} />
           <TextField label="Lieu" fullWidth value={form.location}
             onChange={e => setForm({ ...form, location: e.target.value })} />

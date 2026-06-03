@@ -17,4 +17,13 @@ export const registerToEvent = async (eventId: string) => {
 
 export const unregisterFromEvent = async (eventId: string) => {
   await api.delete(`/registrations/events/${eventId}`);
+ 
 };
+
+export class RegistrationsService {
+  // ... autres méthodes ...
+
+  async verifyTicket(ticketCode: string) {
+    // ... code ...
+  }
+} // ← fermeture de la classe

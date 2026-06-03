@@ -13,7 +13,8 @@ export const getOrganizerDashboard = async () => {
 export const createEvent = async (data: {
   title: string;
   description: string;
-  date: string;
+  startDate: string;
+  endDate: string;
   location: string;
   capacity: number;
 }) => {
