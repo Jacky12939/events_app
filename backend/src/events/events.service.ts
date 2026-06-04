@@ -164,7 +164,11 @@ export class EventsService {
     });
 
     return {
-      stats: { total, published, draft, cancelled, totalRegistrations },
+      totalEvents: total,
+      publishedEvents: published,
+      draftEvents: draft,
+      cancelledEvents: cancelled,
+      totalTicketsSold: totalRegistrations,
       recentEvents,
     };
   }

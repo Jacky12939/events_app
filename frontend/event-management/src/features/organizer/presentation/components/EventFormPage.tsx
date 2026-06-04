@@ -1,169 +1,171 @@
-import { useEffect } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
-import { useNavigate, useParams, Link } from 'react-router-dom';
-import { FiArrowLeft, FiSave } from 'react-icons/fi';
-import { useEventActions } from '../hooks/useEvents';
-import { EventRepositoryImpl } from '../../data/impRepository/EventRepositoryImpl';
+import React, { useState } from 'react';
+import { FiFileText, FiSend, FiCheckCircle } from 'react-icons/fi';
+import type { Event } from '../../domain/entities/Event';
 
-const schema = z.object({
-  title: z.string().min(3, 'Titre requis (min 3 caractères)'),
-  description: z.string().min(10, 'Description requise (min 10 caractères)'),
-  location: z.string().min(3, 'Lieu requis'),
-  startDate: z.string().min(1, 'Date de début requise'),
-  endDate: z.string().min(1, 'Date de fin requise'),
-  capacity: z.coerce.number().min(1, 'Capacité minimale : 1'),
-  status: z.enum(['DRAFT', 'PUBLISHED', 'CANCELLED']),
-  imageUrl: z.string().url('URL invalide').optional().or(z.literal('')),
-  categoryId: z.string().optional(),
-});
+interface EventFormProps {
+  eventToEdit?: Event | null;
+  onSave: (event: Omit<Event, 'id' | 'registeredCount' | 'organizerName'>) => void;
+  onCancel: () => void;
+}
 
-type EventFormData = z.infer<typeof schema>;
+export const EventForm: React.FC<EventFormProps> = ({ eventToEdit, onSave, onCancel }) => {
+  const isEdit = !!eventToEdit;
+  
+  const [title, setTitle] = useState(eventToEdit?.title || '');
+  const [description, setDescription] = useState(eventToEdit?.description || '');
+  const [category, setCategory] = useState(eventToEdit?.category || '');
+  const [location, setLocation] = useState(eventToEdit?.location || '');
+  const [date, setDate] = useState(eventToEdit?.date || '');
+  const [time, setTime] = useState(eventToEdit?.time || '');
+  const [capacity, setCapacity] = useState(eventToEdit?.capacity || 100);
 
-const repo = new EventRepositoryImpl();
-
-const InputField = ({ label, error, children }: { label: string; error?: string; children: React.ReactNode }) => (
-  <div className="mb-4">
-    <label className="block mb-1 font-medium">{label}</label>
-    {children}
-    {error && <p className="mt-1 text-sm text-red-600">{error}</p>}
-  </div>
-);
-
-const inputCls = "w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
-
-export default function EventFormPage() {
-  const { id } = useParams<{ id?: string }>();
-  const isEdit = !!id;
-  const navigate = useNavigate();
-  const { create, update, loading, error } = useEventActions();
-
-  const { register, handleSubmit, reset, formState: { errors } } = useForm<EventFormData>({
-    resolver: zodResolver(schema),
-    defaultValues: { status: 'DRAFT', capacity: 100 },
-  });
-
-  useEffect(() => {
-    if (isEdit && id) {
-      repo.getById(id).then(ev => {
-        reset({
-          title: ev.title,
-          description: ev.description,
-          location: ev.location,
-          startDate: ev.startDate.slice(0, 16),
-          endDate: ev.endDate.slice(0, 16),
-          capacity: ev.capacity,
-          status: ev.status,
-          imageUrl: ev.imageUrl || '',
-          categoryId: ev.categoryId || '',
-        });
-      });
-    }
-  }, [id, isEdit, reset]);
-
-  const onSubmit = async (data: EventFormData) => {
-    try {
-      const payload = {
-        ...data,
-        imageUrl: data.imageUrl || undefined,
-        categoryId: data.categoryId || undefined,
-      };
-      if (isEdit && id) {
-        await update(id, payload);
-      } else {
-        await create(payload);
-      }
-      navigate('/organizer/dashboard');
-    } catch {}
+  // ✅ Correction du typage strict avec les statuts exacts
+  const handleSubmit = (status: 'draft' | 'published' | 'completed') => {
+    onSave({ title, description, category, location, date, time, capacity, status });
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-white">
-      {/* Navbar */}
-      <nav className="flex justify-between items-center p-4 shadow-md sticky top-0 bg-inherit z-50">
-        <div className="flex items-center space-x-2">
-          <FiArrowLeft size={24} />
-          <h1 className="text-xl font-semibold">{isEdit ? 'Modifier l\'événement' : 'Créer un événement'}</h1>
-        </div>
-        <Link
-          to="/organizer/dashboard"
-          className="px-4 py-2 bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600 transition flex items-center space-x-2"
-        >
-          <FiArrowLeft /> Retour
-        </Link>
-      </nav>
+    <div className="max-w-xl mx-auto p-6 bg-slate-50 min-h-screen">
+      <h1 className="text-2xl font-bold text-slate-900 mb-6">
+        {isEdit ? "Modifier l'événement" : "Créer un événement"}
+      </h1>
 
-      {/* Formulaire */}
-      <div className="flex-1 p-8 max-w-3xl mx-auto">
-        {/* Erreur globale */}
-        {error && (
-          <div className="mb-4 p-4 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-300 rounded">{error}</div>
+      <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-6 space-y-5">
+        
+        {/* Affichage visuel du badge selon le statut exact */}
+        {isEdit && (
+          <div className="flex gap-2">
+            {eventToEdit.status === 'draft' && (
+              <span className="bg-slate-100 text-slate-600 text-xs font-semibold px-2.5 py-1 rounded-full">
+                Brouillon
+              </span>
+            )}
+            {eventToEdit.status === 'published' && (
+              <span className="bg-green-100 text-green-700 text-xs font-semibold px-2.5 py-1 rounded-full">
+                Publié
+              </span>
+            )}
+            {eventToEdit.status === 'completed' && (
+              <span className="bg-blue-100 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-full">
+                Terminé
+              </span>
+            )}
+          </div>
         )}
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          {/* Titre */}
-          <InputField label="Titre *" error={errors.title?.message}>
-            <input {...register('title')} placeholder="Titre de l'événement" className={inputCls} />
-          </InputField>
 
-          {/* Description */}
-          <InputField label="Description *" error={errors.description?.message}>
-            <textarea {...register('description')} placeholder="Description" className={`${inputCls} resize-none`} rows={4} />
-          </InputField>
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 mb-1.5">Titre de l'événement *</label>
+          <input 
+            type="text" 
+            value={title} 
+            onChange={(e) => setTitle(e.target.value)}
+            placeholder="Ex: Conférence Tech"
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500"
+          />
+        </div>
 
-          {/* Lieu */}
-          <InputField label="Lieu *" error={errors.location?.message}>
-            <input {...register('location')} placeholder="Douala, Cameroun" className={inputCls} />
-          </InputField>
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 mb-1.5">Description *</label>
+          <textarea 
+            rows={4}
+            value={description} 
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="Décrivez votre événement en détail..."
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500 resize-none"
+          />
+        </div>
 
-          {/* Date et heure de début / fin */}
-          <div className="grid sm:grid-cols-2 gap-4">
-            <InputField label="Date et heure de début *" error={errors.startDate?.message}>
-              <input {...register('startDate')} type="datetime-local" className={inputCls} />
-            </InputField>
-            <InputField label="Date et heure de fin *" error={errors.endDate?.message}>
-              <input {...register('endDate')} type="datetime-local" className={inputCls} />
-            </InputField>
-          </div>
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 mb-1.5">Catégorie *</label>
+          <input 
+            type="text" 
+            value={category} 
+            onChange={(e) => setCategory(e.target.value)}
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500"
+          />
+        </div>
 
-          {/* Capacité & Statut */}
-          <div className="grid sm:grid-cols-2 gap-4">
-            <InputField label="Capacité *" error={errors.capacity?.message}>
-              <input {...register('capacity')} type="number" min="1" className={inputCls} />
-            </InputField>
-            <InputField label="Statut *" error={errors.status?.message}>
-              <select {...register('status')} className={inputCls}>
-                <option value="DRAFT">Brouillon</option>
-                <option value="PUBLISHED">Publié</option>
-                <option value="CANCELLED">Annulé</option>
-              </select>
-            </InputField>
-          </div>
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 mb-1.5">Lieu *</label>
+          <input 
+            type="text" 
+            value={location} 
+            onChange={(e) => setLocation(e.target.value)}
+            placeholder="Ex: Yaoundé, Cameroun"
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500"
+          />
+        </div>
 
-          {/* URL Image */}
-          <InputField label="URL de l'image" error={errors.imageUrl?.message}>
-            <input {...register('imageUrl')} type="url" placeholder="https://..." className={inputCls} />
-          </InputField>
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 mb-1.5">Date *</label>
+          <input 
+            type="date" 
+            value={date} 
+            onChange={(e) => setDate(e.target.value)}
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500"
+          />
+        </div>
 
-          {/* Boutons */}
-          <div className="pt-4 flex gap-3">
-            <button
-              type="submit"
-              disabled={loading}
-              className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-60 text-white font-semibold rounded-xl transition shadow-md"
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 mb-1.5">Heure *</label>
+          <input 
+            type="time" 
+            value={time} 
+            onChange={(e) => setTime(e.target.value)}
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500"
+          />
+        </div>
+
+        <div>
+          <label className="block text-xs font-semibold text-slate-700 mb-1.5">Capacité (nombre de places) *</label>
+          <input 
+            type="number" 
+            value={capacity} 
+            onChange={(e) => setCapacity(Number(e.target.value))}
+            placeholder="Ex: 100"
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm focus:outline-none focus:border-indigo-500"
+          />
+        </div>
+
+        {/* Boutons d'actions adaptées aux 3 statuts */}
+        <div className="pt-4 flex flex-col gap-3">
+          <div className="grid grid-cols-2 gap-3">
+            <button 
+              type="button"
+              onClick={() => handleSubmit('draft')}
+              className="flex items-center justify-center gap-2 bg-slate-400 text-white font-semibold text-xs py-3 rounded-lg hover:bg-slate-500 transition cursor-pointer"
             >
-              <FiSave size={16} />
-              {loading ? 'Enregistrement...' : isEdit ? 'Mettre à jour' : 'Créer l\'événement'}
+              <FiFileText size={14} /> Enregistrer comme brouillon
             </button>
-            <Link
-              to="/organizer/dashboard"
-              className="px-6 py-3 border border-gray-200 dark:border-gray-600 text-gray-600 dark:text-gray-300 font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition"
+            <button 
+              type="button"
+              onClick={() => handleSubmit('published')}
+              className="flex items-center justify-center gap-2 bg-indigo-600 text-white font-semibold text-xs py-3 rounded-lg hover:bg-indigo-700 transition shadow-sm cursor-pointer"
             >
-              Annuler
-            </Link>
+              <FiSend size={14} /> Publier l'événement
+            </button>
           </div>
-        </form>
+
+          {/* Bouton additionnel disponible uniquement en mode édition pour clore l'événement */}
+          {isEdit && eventToEdit.status === 'published' && (
+            <button 
+              type="button"
+              onClick={() => handleSubmit('completed')}
+              className="w-full flex items-center justify-center gap-2 bg-emerald-600 text-white font-semibold text-xs py-3 rounded-lg hover:bg-emerald-700 transition shadow-sm cursor-pointer"
+            >
+              <FiCheckCircle size={14} /> Marquer comme terminé (Completed)
+            </button>
+          )}
+        </div>
+
+        <button 
+          type="button"
+          onClick={onCancel}
+          className="w-full text-center text-xs text-slate-500 underline pt-2 block cursor-pointer"
+        >
+          Annuler
+        </button>
       </div>
     </div>
   );
-}
+};

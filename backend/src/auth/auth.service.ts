@@ -4,11 +4,13 @@ import {
   ConflictException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import * as bcrypt from 'bcrypt';
+import * as bcrypt from 'bcrypt'; // 👈 Correction : importer le vrai paquet bcrypt
+import * as crypto from 'crypto'; // 👈 Correction : importer le paquet crypto natif de Node
 import { PrismaService } from '../prisma/prisma.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { Role } from '@prisma/client';
+import { CreateOrganizerDto } from './dto/create-organisez.dto';
 
 @Injectable()
 export class AuthService {
@@ -36,7 +38,7 @@ export class AuthService {
         firstName: dto.firstName,
         lastName: dto.lastName,
         password: hashedPassword,
-        role: Role.PARTICIPANT, // Rôle par défaut
+        role: Role.PARTICIPANT, 
       },
       select: {
         id: true,
@@ -88,7 +90,7 @@ export class AuthService {
   }
 
   // Créer un organisateur (réservé à l'admin)
-  async createOrganizer(dto: RegisterDto) {
+  async createOrganizer(dto: CreateOrganizerDto) {
     const existing = await this.prisma.user.findUnique({
       where: { email: dto.email },
     });
@@ -97,7 +99,8 @@ export class AuthService {
       throw new ConflictException('Un compte avec cet email existe déjà');
     }
 
-    const hashedPassword = await bcrypt.hash(dto.password, 12);
+    const tempPassword = crypto.randomBytes(12).toString('hex');
+    const hashedPassword = await bcrypt.hash(tempPassword, 12);
 
     const organizer = await this.prisma.user.create({
       data: {
@@ -117,9 +120,18 @@ export class AuthService {
       },
     });
 
+    const token = this.generateToken(organizer.id, organizer.email, organizer.role);
+
     return {
       message: 'Organisateur créé avec succès',
-      organizer,
+      organizer: {
+        ...organizer,
+        id: organizer.id,
+        name: `${organizer.firstName} ${organizer.lastName}`,
+        registrationDate: organizer.createdAt.toISOString(),
+      },
+      tempPassword,
+      token,
     };
   }
 

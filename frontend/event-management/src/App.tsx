@@ -1,48 +1,65 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthScreen } from './features/Authentification/presentation/components/AuthScreen';
+import { ProtectedRoute } from './shared/guards/ProtectedRoute';
+import { UnauthorizedPage } from './shared/components/UnauthorizedPage';
 
-import LandingPage from "./features/Authentification/presentation/components/LandingPage";
-import LoginPage from "./features/Authentification/presentation/components/LoginPage";
-import RegisterPage from "./features/Authentification/presentation/components/RegisterPage";
-import EventsPage from "./features/Authentification/presentation/components/EventsPage";
+// Importe tes composants dashboard selon leur emplacement réel
+import { AdminFeatureContainer } from './features/admin/presentation/AdminFeatureContainer';
+import { OrganizerFeatureContainer } from './features/organizer/presentation/OrganizerFeatureContainer';
+import { ParticipantDashboard } from './features/participant/presentation/components/ParticipantDashboard';
+import LandingPage from './features/Landing/presentation/LandingPage';
 
-import AdminDashboard from "./features/admin/presentation/components/AdminDashboard";
-
-import OrganizerDashboard from "./features/organizer/presentation/components/OrganizerDashboard";
-import EventFormPage from "./features/organizer/presentation/components/EventFormPage";
-
-import { ThemeProvider } from "./context/ThemeContext";
-
-function App() {
+export const App: React.FC = () => {
   return (
-    <ThemeProvider>
-      <Router>
-        <Routes>
-          {/* Public */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
-          <Route path="/events" element={<EventsPage />} />
+    <Router>
+      <Routes>
+        {/* Routes publiques */}
+        <Route path="/" element={<LandingPage/>} />
+        <Route path="/login" element={<AuthScreen initialView="login" />} />
+        <Route path="/register" element={<AuthScreen initialView="register" />} />
+        <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
-          {/* Organisateur */}
-          <Route
-            path="/organizer/dashboard"
-            element={<OrganizerDashboard />}
-          />
+        {/* Routes protégées Admin */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminFeatureContainer />
+            </ProtectedRoute>
+          }
+        />
 
-          <Route
-            path="/organizer/events/create"
-            element={<EventFormPage />}
-          />
+        {/* Routes protégées Organisateur */}
+        <Route
+          path="/organizer/dashboard"
+          element={
+            <ProtectedRoute allowedRoles={['ORGANIZER']}>
+              <OrganizerFeatureContainer />
+            </ProtectedRoute>
+          }
+        />
 
-          Admin
-          <Route
-            path="/admin/dashboard"
-            element={<AdminDashboard />}
-          />
-        </Routes>
-      </Router>
-    </ThemeProvider>
+        {/* Routes protégées Participant */}
+        <Route
+          path="/events"
+          element={
+            <ProtectedRoute allowedRoles={['PARTICIPANT']}>
+              <ParticipantDashboard />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Ancienne route participant conservée pour compatibilité */}
+        <Route
+          path="/participant/events"
+          element={<Navigate to="/events" replace />}
+        />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
   );
-}
+};
 
 export default App;

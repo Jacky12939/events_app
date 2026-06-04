@@ -1,20 +1,22 @@
-import type { User } from '../../domain/entities/User';
+import type { UserSessionEntity } from '../../domain/entities/auth.entity';
 import type { AuthResponseDto } from '../dtos/AuthDto';
-import type { AuthResponse } from '../../domain/repositories/AuthRepository';
 
-export const AuthMapper = {
-  toEntity(dto: AuthResponseDto): AuthResponse {
+export class AuthMapper {
+  static toSessionEntity(dto: AuthResponseDto): UserSessionEntity {
+    const allowedRoles = ['ADMIN', 'ORGANIZER', 'PARTICIPANT'] as const;
+    const role = allowedRoles.includes(dto.user.role )
+      ? (dto.user.role as 'ADMIN' | 'ORGANIZER' | 'PARTICIPANT')
+      : 'PARTICIPANT';
+
     return {
-      message: dto.message,
-      access_token: dto.access_token,
+      token: dto.access_token,
       user: {
         id: dto.user.id,
-        email: dto.user.email,
         firstName: dto.user.firstName,
         lastName: dto.user.lastName,
-        role: dto.user.role as User['role'],
-        createdAt: dto.user.createdAt,
+        email: dto.user.email,
+        role,
       },
     };
-  },
-};
+  }
+}

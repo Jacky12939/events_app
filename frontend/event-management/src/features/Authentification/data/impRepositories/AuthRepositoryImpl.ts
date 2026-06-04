@@ -1,21 +1,28 @@
-import { AuthMapper } from '../mappers/AuthMapper';
-import type { AuthRepository, LoginPayload, RegisterPayload, AuthResponse } from '../../domain/repositories/AuthRepository';
-import type { User } from '../../domain/entities/User';
 import api from '../../../../core/api/axiosInstance';
+import type { AuthRepository } from '../../domain/repositories/AuthRepository';
+import type { LoginInput, RegisterInput } from '../../presentation/validator/authSchemas';
+import type { AuthResponseDto } from '../dtos/AuthDto';
+import type { UserSessionEntity } from '../../domain/entities/auth.entity';
+import { AuthMapper } from '../mappers/AuthMapper';
 
 export class AuthRepositoryImpl implements AuthRepository {
-  async login(payload: LoginPayload): Promise<AuthResponse> {
-    const { data } = await api.post('/auth/login', payload);
-    return AuthMapper.toEntity(data);
+
+  async login(credentials: LoginInput): Promise<UserSessionEntity> {
+    const response = await api.post<AuthResponseDto>('/auth/login', {
+      email: credentials.email,
+      password: credentials.password,
+    });
+    return AuthMapper.toSessionEntity(response.data);
   }
 
-  async register(payload: RegisterPayload): Promise<AuthResponse> {
-    const { data } = await api.post('/auth/register', payload);
-    return AuthMapper.toEntity(data);
-  }
-
-  async getProfile(): Promise<User> {
-    const { data } = await api.get('/users/me');
-    return data;
+  async register(accountData: RegisterInput): Promise<UserSessionEntity> {
+    // On n'envoie PAS confirmPassword ni role au backend
+    const response = await api.post<AuthResponseDto>('/auth/register', {
+      firstName: accountData.firstName,
+      lastName: accountData.lastName,
+      email: accountData.email,
+      password: accountData.password,
+    });
+    return AuthMapper.toSessionEntity(response.data);
   }
 }

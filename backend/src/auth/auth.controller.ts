@@ -9,6 +9,8 @@ import { RolesGuard } from './guards/roles.guard';
 
 import { Role } from '@prisma/client';
 import { Roles } from './guards/roles.decorator';
+import { CreateOrganizerDto } from './dto/create-organisez.dto';
+
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -32,7 +34,9 @@ export class AuthController {
   @Roles(Role.ADMIN)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Créer un organisateur (Admin uniquement)' })
-  createOrganizer(@Body() dto: RegisterDto) {
-    return this.authService.createOrganizer(dto);
+  createOrganizer(@Body() dto: CreateOrganizerDto) {
+  return this.authService.createOrganizer(dto);
   }
+
+  
 }
