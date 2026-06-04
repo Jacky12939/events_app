@@ -5,7 +5,7 @@ import {
   Delete,
   Get,
   Param,
-  UseGuards,
+  UseGuards, Body
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
 import { RegistrationsService } from './registrations.service';
@@ -66,4 +66,10 @@ export class RegistrationsController {
   ) {
     return this.registrationsService.getEventParticipants(eventId, user.id);
   }
+  @Post('verify')
+  @ApiOperation({ summary: 'Vérifier un billet par ticketCode' })
+  verifyTicket(@Body() body: { ticketCode: string }) {
+    return this.registrationsService.verifyTicket(body.ticketCode);
+  }
 }
+

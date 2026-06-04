@@ -10,7 +10,7 @@ import * as QRCode from 'qrcode';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
-export class RegistrationsService {
+export class RegistrationsService {  
   constructor(private prisma: PrismaService) {}
 
   async register(eventId: string, participantId: string) {
@@ -189,4 +189,23 @@ export class RegistrationsService {
       orderBy: { createdAt: 'asc' },
     });
   }
+
+  async verifyTicket(ticketCode: string) {
+    const registration = await this.prisma.registration.findUnique({
+      where: { ticketCode },
+      include: {
+        event: true,
+        participant: {
+          select: { id: true, firstName: true, lastName: true, email: true }
+        }
+      }
+    });
+
+    if (!registration) {
+      throw new NotFoundException('Billet introuvable');
+    }
+
+    return registration;
+   }
+
 }
