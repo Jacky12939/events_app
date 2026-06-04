@@ -57,7 +57,7 @@ export default function OrganizerPage() {
 
   const handleSave = async () => {
     try {
-      const data = { ...form, capacity: Number(form.capacity) };
+      const data = { ...form, capacity: Number(form.capacity), startDate: new Date(form.startDate).toISOString(), endDate: new Date(form.endDate).toISOString() };
       if (editingEvent) {
         await updateEvent(editingEvent.id, data);
         setSuccess("Événement modifié !");
@@ -172,6 +172,9 @@ export default function OrganizerPage() {
             onChange={e => setForm({ ...form, description: e.target.value })} />
           <TextField label="Date" type="date" fullWidth value={form.startDate}
             onChange={e => setForm({ ...form, startDate: e.target.value })}
+            InputLabelProps={{ shrink: true }} />
+          <TextField label="Date de fin" type="date" fullWidth value={form.endDate}
+            onChange={e => setForm({ ...form, endDate: e.target.value })}
             InputLabelProps={{ shrink: true }} />
           <TextField label="Lieu" fullWidth value={form.location}
             onChange={e => setForm({ ...form, location: e.target.value })} />
