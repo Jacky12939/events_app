@@ -137,7 +137,7 @@ export default function OrganizerPage() {
                     📍 {evt.location}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    👥 {evt.registrationCount || 0} / {evt.capacity} inscrits
+                    👥 {evt._count?.registrations || 0} / {evt.capacity} inscrits
                   </Typography>
                 </CardContent>
                 <CardActions>

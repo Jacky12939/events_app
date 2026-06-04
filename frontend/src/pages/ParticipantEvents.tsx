@@ -94,7 +94,7 @@ export default function ParticipantEvents() {
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <People fontSize="small" color="action" />
                     <Typography variant="body2">
-                      {evt.registrationCount || 0} / {evt.capacity} inscrits
+                      {evt._count?.registrations || 0} / {evt.capacity} inscrits
                     </Typography>
                   </Box>
                 </CardContent>

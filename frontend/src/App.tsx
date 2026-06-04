@@ -34,7 +34,11 @@ export default function App() {
         <Route path="/checker" element={
           <PrivateRoute><CheckerPage /></PrivateRoute>
         } />
-        <Route path="/events" element={
+        <Route path="/events"
+        />
+        <Route path="/participant" element={
+          <PrivateRoute><ParticipantEvents /></PrivateRoute>
+        } element={
           <PrivateRoute><ParticipantEvents /></PrivateRoute>
         } />
         <Route path="/checker" element={
