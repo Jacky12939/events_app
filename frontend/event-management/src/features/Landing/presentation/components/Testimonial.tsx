@@ -7,7 +7,7 @@ export const Testimonial: React.FC = () => {
         ★★★★★
       </div>
       <blockquote className="text-xl sm:text-2xl font-medium text-gray-900 dark:text-white leading-relaxed max-w-3xl mx-auto">
-        "EventHub a transformé la façon dont nous organisons nos conférences. Gain de temps considérable et zéro friction."
+        "Eventory a transformé la façon dont nous organisons nos conférences. Gain de temps considérable et zéro friction."
       </blockquote>
       <div className="mt-6 flex items-center justify-center gap-3">
         <div className="w-10 h-10 rounded-full bg-[#7c3aed] text-white flex items-center justify-center font-bold text-sm">

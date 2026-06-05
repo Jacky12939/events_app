@@ -7,22 +7,18 @@ export const Hero: React.FC = () => {
   return (
     <section className="relative overflow-hidden pt-32 pb-24 text-center px-4 min-h-[85vh] flex items-center justify-center">
       
-      {/* 📸 IMAGE / VIDÉO D'AMBIANCE EN ARRIÈRE-PLAN (Comme sur ta capture) */}
       <div className="absolute inset-0 z-0">
         <img 
           src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?w=1600&auto=format&fit=crop&q=80" 
           alt="Concert Event Background" 
           className="w-full h-full object-cover opacity-40 dark:opacity-25 filter brightness-50 dark:brightness-75 scale-105"
         />
-        {/* Overlay de dégradé pour l'effet de fondu comme dans la vidéo */}
         <div className="absolute inset-0 bg-gradient-to-b from-white/20 via-white to-white dark:from-[#0b0c10]/40 dark:via-[#0b0c10]/80 dark:to-[#0b0c10]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,white_80%)] dark:bg-[radial-gradient(circle_at_center,transparent_30%,#0b0c10_80%)]" />
       </div>
 
-      {/* Contenu de la section (Reste au-dessus de l'image grâce au z-10) */}
       <div className="max-w-3xl mx-auto relative z-10 space-y-8">
         
-        {/* Texte Principal */}
         <div className="space-y-4">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold tracking-tight text-gray-900 dark:text-white leading-tight">
             Trouvez et organisez des <span className="text-[#7c3aed]">événements</span> uniques
@@ -32,7 +28,6 @@ export const Hero: React.FC = () => {
           </p>
         </div>
 
-        {/* Boutons d'action (CTA) */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 max-w-md mx-auto">
           <button 
             onClick={() => navigate('/register')}

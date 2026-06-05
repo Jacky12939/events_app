@@ -11,7 +11,6 @@ export const Navbar: React.FC = () => {
   return (
     <nav className="sticky top-0 z-50 backdrop-blur-md bg-white/80 dark:bg-[#0b0c10]/80 border-b border-gray-100 dark:border-gray-900 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-        {/* Logo */}
         <div 
           className="flex items-center gap-2 cursor-pointer"
           onClick={() => navigate('/')}
@@ -19,10 +18,9 @@ export const Navbar: React.FC = () => {
           <div className="bg-[#7c3aed] text-white p-2 rounded-xl">
             <FaCalendarAlt className="w-5 h-5" />
           </div>
-          <span className="text-xl font-bold text-gray-900 dark:text-white">EventHub</span>
+          <span className="text-xl font-bold text-gray-900 dark:text-white">Eventory</span>
         </div>
 
-        {/* Navigation & Actions */}
         <div className="flex items-center gap-6">
           <button 
             onClick={toggleTheme}

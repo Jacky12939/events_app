@@ -1,5 +1,5 @@
 import api from '../../../../core/api/axiosInstance';
-import type { BaseUser, AdminEventSummary, AdminStats, AdminProfile } from '../../domain/entities/AdminEntities';
+import type { BaseUser, AdminEventSummary, AdminStats, AdminProfile, UserRegistration } from '../../domain/entities/AdminEntities';
 import type { AdminRepository } from '../../domain/repositories/AdminRepository';
 import type { AdminEventDTO, UserDTO, AdminProfileDTO } from '../dtos/AdminDTO';
 import { AdminMapper } from '../mappers/AdminMapper';
@@ -12,23 +12,23 @@ interface CreateOrganizerResponse {
 
 export class AdminRepositoryImpl implements AdminRepository {
 
-  async getStats(): Promise<AdminStats> {
-    const [usersResponse, eventsResponse] = await Promise.all([
-      api.get<UserDTO[]>('/users'),
-      api.get<AdminEventDTO[]>('/events'),
-    ]);
+   async getStats(): Promise<AdminStats> {
+     const [usersResponse, eventsResponse] = await Promise.all([
+       api.get<UserDTO[]>('/users'),
+       api.get<AdminEventDTO[]>('/events'),
+     ]);
 
-    const users = usersResponse.data;
-    const events = eventsResponse.data;
+     const users = usersResponse.data.map(AdminMapper.toUserDomain);
+     
 
-    return {
-      totalEvents: events.length,
-      publishedEvents: events.filter(e => e.status === 'published').length,
-      totalRegistrations: events.reduce((sum, e) => sum + e.slotsTaken, 0),
-      organizerCount: users.filter(u => u.role === 'ORGANIZER').length,
-      participantCount: users.filter(u => u.role === 'PARTICIPANT').length,
+     return {
+      totalEvents: eventsResponse.data.length,
+      publishedEvents: eventsResponse.data.filter(e => e.status === 'published').length,
+      totalRegistrations: eventsResponse.data.reduce((sum, e) => sum + e.slotsTaken, 0),
+      organizerCount: users.filter(u => u.role === 'organisateur').length,
+      participantCount: users.filter(u => u.role === 'participant').length,
     };
-  }
+   }
 
   async getUsers(): Promise<BaseUser[]> {
     const response = await api.get<UserDTO[]>('/users');
@@ -75,8 +75,13 @@ export class AdminRepositoryImpl implements AdminRepository {
     return response.data.map(AdminMapper.toEventDomain);
   }
 
-  async getUserRegistrations(userId: string): Promise<any[]> {
-    const response = await api.get<any[]>(`/registrations/me?userId=${userId}`);
+  async getUserRegistrations(userId: string): Promise<[]> {
+    const response = await api.get<[]>(`/registrations/me?userId=${userId}`);
     return response.data;
+  }
+
+  async updateProfile(data: { name?: string; email?: string; currentPassword?: string; newPassword?: string }): Promise<AdminProfile> {
+    const response = await api.patch<AdminProfileDTO>('/users/me', data);
+    return AdminMapper.toProfileDomain(response.data);
   }
 }

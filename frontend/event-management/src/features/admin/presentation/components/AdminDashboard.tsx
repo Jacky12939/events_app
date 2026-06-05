@@ -26,9 +26,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     e.preventDefault();
     if (!name || !email) return;
     const tempPassword = await onAddOrganizer(name, email);
-    if (tempPassword) {
-      setCreatedCredentials({ email, password: tempPassword });
-    }
+    setCreatedCredentials({ 
+      email, 
+      password: tempPassword || 'NON FOURNI PAR LE BACKEND - Vérifiez la configuration serveur' 
+    });
     setName(''); setEmail('');
     setShowForm(false);
   };

@@ -29,6 +29,22 @@ export const App: React.FC = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/profile"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminFeatureContainer />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/view/:id"
+          element={
+            <ProtectedRoute allowedRoles={['ADMIN']}>
+              <AdminFeatureContainer />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Routes protégées Organisateur */}
         <Route

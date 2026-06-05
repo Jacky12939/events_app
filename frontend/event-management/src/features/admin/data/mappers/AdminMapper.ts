@@ -5,7 +5,6 @@ export class AdminMapper {
   static toUserDomain(dto: UserDTO): BaseUser {
     const fullName = `${dto.firstName} ${dto.lastName}`.trim();
     const roleMap: Record<string, BaseUser['role']> = {
-      'ADMIN': 'participant',
       'ORGANIZER': 'organisateur',
       'PARTICIPANT': 'participant',
     };
