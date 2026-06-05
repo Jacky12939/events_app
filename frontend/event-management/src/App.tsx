@@ -1,30 +1,40 @@
-import React from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthScreen } from './features/Authentification/presentation/components/AuthScreen';
-import { ProtectedRoute } from './shared/guards/ProtectedRoute';
-import { UnauthorizedPage } from './shared/components/UnauthorizedPage';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { AuthScreen } from "./features/Authentification/presentation/components/AuthScreen";
+import { ProtectedRoute } from "./shared/guards/ProtectedRoute";
+import { UnauthorizedPage } from "./shared/components/UnauthorizedPage";
+import Navbar from "./shared/components/Navbar";
 
 // Importe tes composants dashboard selon leur emplacement réel
-import { AdminFeatureContainer } from './features/admin/presentation/AdminFeatureContainer';
-import { OrganizerFeatureContainer } from './features/organizer/presentation/OrganizerFeatureContainer';
-import { ParticipantDashboard } from './features/participant/presentation/components/ParticipantDashboard';
-import LandingPage from './features/Landing/presentation/LandingPage';
+import { AdminFeatureContainer } from "./features/admin/presentation/AdminFeatureContainer";
+import { OrganizerFeatureContainer } from "./features/organizer/presentation/OrganizerFeatureContainer";
+import { ParticipantDashboard } from "./features/participant/presentation/components/ParticipantDashboard";
+import LandingPage from "./features/Landing/presentation/LandingPage";
 
 export const App: React.FC = () => {
   return (
     <Router>
+      <Navbar />
       <Routes>
         {/* Routes publiques */}
-        <Route path="/" element={<LandingPage/>} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<AuthScreen initialView="login" />} />
-        <Route path="/register" element={<AuthScreen initialView="register" />} />
+        <Route
+          path="/register"
+          element={<AuthScreen initialView="register" />}
+        />
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
         {/* Routes protégées Admin */}
         <Route
           path="/admin/dashboard"
           element={
-            <ProtectedRoute allowedRoles={['ADMIN']}>
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
               <AdminFeatureContainer />
             </ProtectedRoute>
           }
@@ -32,7 +42,7 @@ export const App: React.FC = () => {
         <Route
           path="/admin/profile"
           element={
-            <ProtectedRoute allowedRoles={['ADMIN']}>
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
               <AdminFeatureContainer />
             </ProtectedRoute>
           }
@@ -40,7 +50,7 @@ export const App: React.FC = () => {
         <Route
           path="/admin/view/:id"
           element={
-            <ProtectedRoute allowedRoles={['ADMIN']}>
+            <ProtectedRoute allowedRoles={["ADMIN"]}>
               <AdminFeatureContainer />
             </ProtectedRoute>
           }
@@ -50,7 +60,7 @@ export const App: React.FC = () => {
         <Route
           path="/organizer/dashboard"
           element={
-            <ProtectedRoute allowedRoles={['ORGANIZER']}>
+            <ProtectedRoute allowedRoles={["ORGANIZER"]}>
               <OrganizerFeatureContainer />
             </ProtectedRoute>
           }
@@ -60,7 +70,7 @@ export const App: React.FC = () => {
         <Route
           path="/events"
           element={
-            <ProtectedRoute allowedRoles={['PARTICIPANT']}>
+            <ProtectedRoute allowedRoles={["PARTICIPANT"]}>
               <ParticipantDashboard />
             </ProtectedRoute>
           }
