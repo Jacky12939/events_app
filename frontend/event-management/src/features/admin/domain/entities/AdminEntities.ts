@@ -30,3 +30,11 @@ export interface AdminProfile {
   role: string;
   memberSince: string;
 }
+
+export interface UserRegistration {
+  eventTitle: string;
+  date: string;
+  registrationDate: string;
+  ticketNumber: string;
+  category: string;
+}

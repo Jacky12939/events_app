@@ -1,21 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { FiMail, FiLock, FiUser, FiEye, FiEyeOff, FiCalendar, FiLoader, FiAlertCircle } from 'react-icons/fi';
+import { 
+  FiMail, FiLock, FiUser, FiEye, FiEyeOff, 
+  FiCalendar, FiLoader, FiAlertCircle, FiArrowLeft, FiSun, FiMoon 
+} from 'react-icons/fi';
 import { useAuth } from '../hooks/useAuth';
 import { loginSchema, registerSchema, type LoginInput, type RegisterInput } from '../validator/authSchemas';
 
 interface AuthScreenProps {
   onAuthSuccess?: () => void;
   initialView?: 'login' | 'register';
+  onBack?: () => void; // ✅ Ajout d'une prop optionnelle pour gérer le clic sur Retour
 }
 
-export const AuthScreen: React.FC<AuthScreenProps> = ({ initialView = 'login' }) => {
+export const AuthScreen: React.FC<AuthScreenProps> = ({ initialView = 'login', onBack }) => {
   const [isLoginView, setIsLoginView] = useState<boolean>(initialView === 'login');
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const [darkMode, setDarkMode] = useState<boolean>(() => localStorage.getItem('theme') === 'dark');
 
-  // On utilise le hook useAuth qui gère la redirection selon le rôle
   const { login, register: registerUser, loading, error } = useAuth();
 
   const loginForm = useForm<LoginInput>({
@@ -47,25 +50,41 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ initialView = 'login' })
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 flex flex-col justify-center font-sans antialiased p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 flex flex-col font-sans antialiased">
       
-      <div className="absolute top-6 right-6">
-        <button
-          onClick={() => setDarkMode(!darkMode)}
-          className="px-4 py-2.5 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl font-bold shadow-sm transition hover:bg-slate-100 dark:hover:bg-slate-800 text-sm cursor-pointer"
-        >
-          {darkMode ? '☀️ Mode Clair' : '🌙 Mode Sombre'}
-        </button>
-      </div>
+      {/* 🌐 NAVBAR COMPLETE */}
+      <nav className="w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 fixed top-0 left-0 z-50 h-16 transition-colors duration-300">
+        <div className="max-w-7xl mx-auto h-full px-4 sm:px-6 lg:px-8 flex items-center justify-between">
 
-      <div className="mx-auto w-full max-w-lg">
-        <div className="flex flex-col items-center text-center mb-8 space-y-3">
-          <div className="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl">
-            <FiCalendar className="w-8 h-8" />
+
+          <div className="div">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-9 h-9 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md">
+                    <FiCalendar className="w-5 h-5" />
+                  </div>
+                  <span className="text-xl font-black tracking-tight bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent dark:from-indigo-400">
+                    Eventory
+                  </span>
+
+      
           </div>
-          <h1 className="text-3xl font-black tracking-tight bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent dark:from-indigo-400">
-            EventHub
-          </h1>
+
+          </div>
+
+          <button
+            onClick={() => setDarkMode(!darkMode)}
+            className="p-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl font-bold shadow-sm transition hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer"
+            aria-label="Toggle Dark Mode"
+          >
+            {darkMode ? <FiSun className="w-5 h-5 text-amber-500" /> : <FiMoon className="w-5 h-5 text-indigo-600" />}
+          </button>
+
+        </div>
+      </nav>
+
+      <div className="flex-1 flex flex-col justify-center p-4 sm:p-6 lg:p-8 pt-24 pb-12 mx-auto w-full max-w-lg">
+        
+        <div className="flex flex-col items-center text-center mb-8 space-y-2">
           <p className="text-lg font-medium text-slate-500 dark:text-slate-400">
             {isLoginView ? 'Ravi de vous revoir ! Connectez-vous.' : 'Créez votre compte et rejoignez les événements.'}
           </p>
@@ -208,20 +227,16 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ initialView = 'login' })
                 <label className="text-sm font-black text-slate-400 uppercase tracking-wider block">Confirmer le mot de passe</label>
                 <div className="relative flex items-center">
                   <FiLock className="absolute left-4 text-slate-400 w-5 h-5" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    {...registerForm.register('confirmPassword')}
-                    className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-lg font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
-                    placeholder="••••••••"
-                  />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      {...registerForm.register('confirmPassword')}
+                      className="w-full pl-12 pr-4 py-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-lg font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 transition"
+                      placeholder="••••••"
+                    />
                 </div>
                 {registerForm.formState.errors.confirmPassword && (
                   <p className="text-sm font-bold text-red-500 mt-1">{registerForm.formState.errors.confirmPassword.message}</p>
                 )}
-              </div>
-
-              <div className="bg-slate-50 dark:bg-slate-950/60 p-3.5 rounded-xl border border-dashed border-slate-200 dark:border-slate-800 text-center text-sm font-bold text-slate-400">
-                ⚠️ Rôle attribué automatiquement : <span className="text-indigo-600 dark:text-indigo-400 uppercase">Participant</span>
               </div>
 
               <button
@@ -235,18 +250,21 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ initialView = 'login' })
           )}
 
           <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 text-center">
-            <button
-              type="button"
-              onClick={() => {
-                setIsLoginView(!isLoginView);
-                loginForm.reset();
-                registerForm.reset();
-              }}
-              className="text-base font-black text-indigo-600 dark:text-indigo-400 hover:underline cursor-pointer"
-            >
-              {isLoginView ? 'Nouveau sur EventHub ? Créez un compte participant' : 'Vous avez déjà un compte ? Connectez-vous'}
-            </button>
-          </div>
+   <p className="text-sm text-slate-500 dark:text-slate-400 font-medium">
+    {isLoginView ? "Nouveau sur Eventory ?" : "Vous avez déjà un compte ?"}
+    <button
+      type="button"
+      onClick={() => {
+        setIsLoginView(!isLoginView);
+        loginForm.reset();
+        registerForm.reset();
+      }}
+      className="ml-1.5 text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 underline underline-offset-4 transition-colors cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 rounded-md px-1 py-0.5"
+    >
+      {isLoginView ? "Créez un compte" : "Connectez-vous"}
+    </button>
+  </p>
+</div>
         </div>
       </div>
     </div>

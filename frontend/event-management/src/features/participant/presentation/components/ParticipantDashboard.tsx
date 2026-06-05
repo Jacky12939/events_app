@@ -3,6 +3,7 @@ import {
   FiCalendar, FiMapPin, FiSearch, FiSliders, FiLoader, FiAlertTriangle, FiUser, FiLogOut, FiArrowLeft, FiCheckCircle, FiUserCheck, FiDownload, FiLayers
 } from 'react-icons/fi';
 import { useParticipant } from '../hooks/useParticipantData';
+import { Navigate } from 'react-router-dom';
 // import { FiQrCode } from 'react-qr-code'
 
 export const ParticipantDashboard: React.FC = () => {
@@ -31,7 +32,6 @@ export const ParticipantDashboard: React.FC = () => {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-300 font-sans antialiased">
       
-      {/* HEADER (Barre supérieure - Réf: Tout le set d'images) */}
       <nav className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm h-22 flex items-center">
         <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => { setSelectedEvent(null); setSuccessRegistration(false); setActiveTab('discover'); }}>
@@ -39,22 +39,51 @@ export const ParticipantDashboard: React.FC = () => {
               <FiCalendar className="w-6 h-6" />
             </div>
             <span className="text-2xl font-black tracking-tight bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent dark:from-indigo-400">
-              EventHub
+              Eventory
             </span>
           </div>
           
           <div className="flex items-center gap-4">
-            <button 
+            <button
               onClick={() => setDarkMode(!darkMode)}
-              className="p-3 bg-slate-100 dark:bg-slate-800 rounded-xl text-base font-bold transition hover:bg-slate-200"
+              className="
+                p-3
+                bg-slate-100 dark:bg-slate-800
+                rounded-xl
+                text-base font-bold
+                cursor-pointer
+                transition-all duration-300
+                hover:bg-slate-200
+                dark:hover:bg-slate-700
+                hover:scale-105
+                hover:shadow-md
+              "
             >
-              {darkMode ? '☀️ Mode Clair' : '🌙 Mode Sombre'}
+              {darkMode ? '☀️' : '🌙'}
             </button>
 
-            <div className="flex items-center gap-3 px-4 py-2 bg-indigo-50 dark:bg-indigo-950/40 border border-indigo-100 dark:border-indigo-900 rounded-xl">
+           <button
+              onClick={() => Navigate('/profile')}
+              className="
+                flex items-center gap-3
+                px-4 py-2
+                bg-indigo-50 dark:bg-indigo-950/40
+                border border-indigo-100 dark:border-indigo-900
+                rounded-xl
+                cursor-pointer
+                transition-all duration-300
+                hover:bg-indigo-100
+                dark:hover:bg-indigo-900/60
+                hover:shadow-md
+                hover:scale-105
+              "
+            >
               <FiUserCheck className="text-indigo-600 dark:text-indigo-400 w-5 h-5" />
-              <span className="text-base font-extrabold text-indigo-700 dark:text-indigo-300 hidden sm:inline">Participant</span>
-            </div>
+
+              <span className="text-base font-extrabold text-indigo-700 dark:text-indigo-300 hidden sm:inline">
+                Mon Compte
+              </span>
+            </button>
 
             <button className="p-3 text-slate-400 hover:text-red-500 rounded-xl transition" title="Déconnexion">
               <FiLogOut className="w-6 h-6" />
@@ -65,7 +94,6 @@ export const ParticipantDashboard: React.FC = () => {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
         
-        {/* CHARGEMENT / ERREURS GLOBALES */}
         {loading && !selectedEvent && (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
             <FiLoader className="w-12 h-12 text-indigo-600 dark:text-indigo-400 animate-spin" />
@@ -83,9 +111,9 @@ export const ParticipantDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* ========================================================================= */}
+       
         {/* MODAL / ÉCRAN : CONFIRMATION D'INSCRIPTION (Réf: 36_3.png)                 */}
-        {/* ========================================================================= */}
+      
         {!loading && successRegistration && (
           <div className="max-w-xl mx-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-10 text-center shadow-xl animate-scaleUp">
             <div className="w-20 h-20 bg-emerald-50 dark:bg-emerald-950/60 text-emerald-500 rounded-full flex items-center justify-center mx-auto text-4xl mb-6 border border-emerald-100 dark:border-emerald-900">
@@ -112,9 +140,7 @@ export const ParticipantDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* ========================================================================= */}
-        {/* ÉCRAN : DÉTAILS DE L'ATELIER (Réf: 37_3.png)                             */}
-        {/* ========================================================================= */}
+       
         {!loading && !successRegistration && selectedEvent && (
           <div className="max-w-4xl mx-auto bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 overflow-hidden shadow-xl">
             <div className="p-6 border-b border-slate-100 dark:border-slate-800 flex items-center">
@@ -138,7 +164,6 @@ export const ParticipantDashboard: React.FC = () => {
                 <h2 className="text-4xl font-black tracking-tight">{selectedEvent.title}</h2>
               </div>
 
-              {/* Grille d'informations à typographie renforcée */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 pt-2">
                 <div className="flex items-start gap-4">
                   <div className="p-3 bg-slate-50 dark:bg-slate-950 rounded-xl text-slate-400"><FiCalendar className="w-6 h-6" /></div>
@@ -195,9 +220,7 @@ export const ParticipantDashboard: React.FC = () => {
           </div>
         )}
 
-        {/* ========================================================================= */}
-        {/* NAVE PRINCIPALE PAR ONGLETS (Réf: Onglets des maquettes)                    */}
-        {/* ========================================================================= */}
+       
         {!selectedEvent && !successRegistration && (
           <div className="space-y-10">
             
@@ -215,20 +238,14 @@ export const ParticipantDashboard: React.FC = () => {
               >
                 Mes billets ({myTickets.length})
               </button>
-              <button 
-                onClick={() => setActiveTab('profile')}
-                className={`pb-4 text-xl font-black border-b-4 transition whitespace-nowrap cursor-pointer ${activeTab === 'profile' ? 'border-indigo-600 text-indigo-600 dark:text-indigo-400 dark:border-indigo-400' : 'border-transparent text-slate-400 hover:text-slate-600'}`}
-              >
-                Mon compte
-              </button>
+             
             </div>
 
-            {/* ========================================================================= */}
+           
             {/* ONGLET : ENTRÉE CATALOGUE (Réf: 31_3.png)                                  */}
-            {/* ========================================================================= */}
+            
             {activeTab === 'discover' && (
               <div className="space-y-8">
-                {/* Formulaire de filtres réactifs */}
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white dark:bg-slate-900 p-5 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
                   <div className="flex items-center gap-3 bg-slate-50 dark:bg-slate-950 px-4 py-3.5 rounded-xl border border-slate-200 dark:border-slate-800 md:col-span-2">
                     <FiSearch className="text-slate-400 shrink-0 w-5 h-5" />
@@ -314,9 +331,9 @@ export const ParticipantDashboard: React.FC = () => {
               </div>
             )}
 
-            {/* ========================================================================= */}
+          
             {/* ONGLET : GESTION DES BILLETS ACTIFS (Réf: 32_3.png, 33_3.png, 35_3.png)      */}
-            {/* ========================================================================= */}
+           
             {activeTab === 'tickets' && (
               <div className="space-y-8">
                 <h2 className="text-3xl font-black tracking-tight">Mes billets</h2>
@@ -380,9 +397,9 @@ export const ParticipantDashboard: React.FC = () => {
               </div>
             )}
 
-            {/* ========================================================================= */}
-            {/* ONGLET : PARAMÈTRES ET COMPTE PARTICIPANT (Réf: 34_3.png)                  */}
-            {/* ========================================================================= */}
+           
+            {/* ONGLET : PARAMÈTRES ET COMPTE PARTICIPANT ()                  */}
+          
             {activeTab === 'profile' && profile && (
               <div className="max-w-3xl mx-auto space-y-8">
                 <h2 className="text-3xl font-black tracking-tight">Mon compte</h2>

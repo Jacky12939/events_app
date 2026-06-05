@@ -85,6 +85,9 @@ export const useAdminData = () => {
     try {
       const result = await repo.createOrganizer(name, email);
       await refreshAdminData();
+      if (!result.tempPassword) {
+        alert("Organisateur créé mais aucun mot de passe temporaire n'a été retourné par le serveur. Vérifiez la configuration du backend.");
+      }
       return result.tempPassword;
     } catch (err) {
       alert("Échec de création :" + (err instanceof Error ? err.message : "Erreur inconnue"));
@@ -109,6 +112,20 @@ export const useAdminData = () => {
     }
   };
 
+  const updateProfile = async (data: { name?: string; email?: string; currentPassword?: string; newPassword?: string }) => {
+    setLoading(true);
+    try {
+      const updatedProfile = await repo.updateProfile(data);
+      setProfile(updatedProfile);
+      return updatedProfile;
+    } catch (err) {
+      alert("Échec de la mise à jour :" + (err instanceof Error ? err.message : "Erreur inconnue"));
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     stats,
     users,
@@ -119,6 +136,7 @@ export const useAdminData = () => {
     toggleDarkMode,
     addOrganizer,
     removeUser,
-    fetchUserContext
+    fetchUserContext,
+    updateProfile
   };
 };
