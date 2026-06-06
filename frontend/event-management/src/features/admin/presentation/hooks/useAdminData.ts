@@ -94,6 +94,7 @@ const addOrganizer = async (name: string, email: string) => {
         // Cette ligne tente de récupérer le mot de passe peu importe son nom (tempPassword ou password)
         passwordToReturn = result?.tempPassword || result?.password || result?.data?.tempPassword || result?.data?.password;
 
+
     } catch (err) {
         alert("Échec de création : " + (err instanceof Error ? err.message : err));
     } finally {
@@ -119,6 +120,20 @@ const addOrganizer = async (name: string, email: string) => {
     }
   };
 
+  const updateProfile = async (data: { name?: string; email?: string; currentPassword?: string; newPassword?: string }) => {
+    setLoading(true);
+    try {
+      const updatedProfile = await repo.updateProfile(data);
+      setProfile(updatedProfile);
+      return updatedProfile;
+    } catch (err) {
+      alert("Échec de la mise à jour :" + (err instanceof Error ? err.message : "Erreur inconnue"));
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return {
     stats,
     users,
@@ -129,6 +144,7 @@ const addOrganizer = async (name: string, email: string) => {
     toggleDarkMode,
     addOrganizer,
     removeUser,
-    fetchUserContext
+    fetchUserContext,
+    updateProfile
   };
 };

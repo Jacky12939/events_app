@@ -30,6 +30,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       setCreatedCredentials({ email, password: tempPassword });
     }
     setName("); setEmail(");
+
     setShowForm(false);
   };
 

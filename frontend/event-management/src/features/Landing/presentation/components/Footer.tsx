@@ -30,14 +30,14 @@ export const Footer: React.FC = () => {
             <div className="bg-[#7c3aed] text-white p-1.5 rounded-lg">
               <FaCalendar className="w-4 h-4" />
             </div>
-            <span className="font-bold text-gray-900 dark:text-white">EventHub</span>
+            <span className="font-bold text-gray-900 dark:text-white">Eventory</span>
           </div>
           
-          <div>© 2026 EventHub. Tous droits réservés.</div>
+          <div>© 2026 JRC. SheCode.</div>
           
           <div className="flex gap-6 font-medium">
-            <a href="#conf" className="hover:text-gray-900 dark:hover:text-white transition-colors">Confidentialité</a>
-            <a href="#cgu" className="hover:text-gray-900 dark:hover:text-white transition-colors">CGU</a>
+
+            
             <a href="#contact" className="hover:text-gray-900 dark:hover:text-white transition-colors">Contact</a>
           </div>
         </div>
