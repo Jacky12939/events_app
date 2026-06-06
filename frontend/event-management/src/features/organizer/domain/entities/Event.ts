@@ -16,7 +16,7 @@ export interface OrganizerStats {
   totalEvents: number;
   publishedEvents: number;
   draftEvents: number;
-  completedEvents: number; // Statut ajouté aux statistiques globales
+  completedEvents: number; 
   totalRegistered: number;
 }
 
@@ -25,4 +25,8 @@ export interface OrganizerProfile {
   email: string;
   role: string;
   memberSince: string;
+}
+
+export interface OrganizerDashboardData {
+  recentEvents: Event[];
 }

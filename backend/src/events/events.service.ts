@@ -79,6 +79,7 @@ export class EventsService {
       where,
       include: {
         category: true,
+        organizer: { select: { id: true, firstName: true, lastName: true } },
         _count: { select: { registrations: true } },
       },
       orderBy: { createdAt: 'desc' },
@@ -121,6 +122,7 @@ export class EventsService {
       include: {
         organizer: { select: { id: true, firstName: true, lastName: true } },
         category: true,
+        _count: { select: { registrations: true } },
       },
     });
   }
@@ -139,7 +141,7 @@ export class EventsService {
   }
 
   async getOrganizerDashboard(organizerId: string) {
-    const [total, published, draft, cancelled, totalRegistrations] =
+    const [total, published, draft, completed, cancelled, totalRegistrations] =
       await Promise.all([
         this.prisma.event.count({ where: { organizerId } }),
         this.prisma.event.count({
@@ -149,7 +151,10 @@ export class EventsService {
           where: { organizerId, status: EventStatus.DRAFT },
         }),
         this.prisma.event.count({
-          where: { organizerId, status: EventStatus.CANCELLED },
+          where: { organizerId, status: EventStatus.COMPLETED },
+        }),
+        this.prisma.event.count({
+          where: { organizerId, status: EventStatus.COMPLETED },
         }),
         this.prisma.registration.count({
           where: { event: { organizerId } },
@@ -160,16 +165,19 @@ export class EventsService {
       where: { organizerId },
       take: 5,
       orderBy: { createdAt: 'desc' },
-      include: { _count: { select: { registrations: true } } },
+      include: {
+        category: true,
+        organizer: { select: { id: true, firstName: true, lastName: true } },
+        _count: { select: { registrations: true } },
+      },
     });
 
     return {
       totalEvents: total,
       publishedEvents: published,
       draftEvents: draft,
-      cancelledEvents: cancelled,
-      totalTicketsSold: totalRegistrations,
-      recentEvents,
+      completedEvents: completed,
+      totalRegistered: totalRegistrations,
     };
   }
 }

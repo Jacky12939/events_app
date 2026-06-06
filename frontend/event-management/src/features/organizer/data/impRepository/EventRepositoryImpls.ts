@@ -1,8 +1,6 @@
 import axios, { type AxiosInstance } from 'axios';
 import type { EventRepository } from '../../domain/repositories/EventRepository';
-import type { Event, OrganizerStats, OrganizerProfile } from '../../domain/entities/Event';
-import { type EventDTO } from '../dtos/EventDTO';
-import { EventMapper } from '../mappers/EventMapper';
+import type { Event, OrganizerStats, OrganizerProfile, OrganizerDashboardData } from '../../domain/entities/Event';
 
 export class EventRepositoryImpl implements EventRepository {
   private api: AxiosInstance;
@@ -15,7 +13,6 @@ export class EventRepositoryImpl implements EventRepository {
       headers: { 'Content-Type': 'application/json' },
     });
 
-    // Injection automatique du JWT Token de l'organisateur connecté
     this.api.interceptors.request.use((config) => {
       const token = localStorage.getItem('access_token');
       if (token && config.headers) {
@@ -25,34 +22,86 @@ export class EventRepositoryImpl implements EventRepository {
     });
   }
 
+  async getDashboardData(): Promise<OrganizerDashboardData> {
+    const response = await this.api.get<any[]>('/events/organizer/my-events');
+    return {
+      recentEvents: response.data.map(this.toDomain)
+    };
+  }
+
   async getEvents(): Promise<Event[]> {
-    const response = await this.api.get<EventDTO[]>('organizer/events');
-    return response.data.map(EventMapper.toDomain);
+    const response = await this.api.get<any[]>('/events/organizer/my-events');
+    return response.data.map(this.toDomain);
+  }
+
+  private toDomain(event: any): Event {
+    return {
+      id: event.id,
+      title: event.title || '',
+      description: event.description || '',
+      category: event.category?.name || event.category || '',
+      location: event.location || '',
+      date: event.startDate ? new Date(event.startDate).toISOString().split('T')[0] : '',
+      time: event.startDate ? event.startDate.split('T')[1]?.substring(0, 5) : '',
+      capacity: event.capacity || 0,
+      registeredCount: event._count?.registrations || 0,
+      status: event.status?.toLowerCase() || 'draft',
+      organizerName: event.organizer ? `${event.organizer.firstName || ''} ${event.organizer.lastName || ''}`.trim() : '',
+    };
   }
 
   async getStats(): Promise<OrganizerStats> {
-    const response = await this.api.get<OrganizerStats>('organizer/stats');
-    return response.data;
+    const response = await this.api.get<any>('/events/organizer/dashboard');
+    const data = response.data;
+    return {
+      totalEvents: data.totalEvents || 0,
+      publishedEvents: data.publishedEvents || 0,
+      draftEvents: data.draftEvents || 0,
+      completedEvents: data.completedEvents || data.cancelledEvents || 0,
+      totalRegistered: data.totalRegistered || data.totalTicketsSold || 0,
+    };
   }
 
   async getProfile(): Promise<OrganizerProfile> {
-    const response = await this.api.get<OrganizerProfile>('organizer/profile');
-    return response.data;
+    const response = await this.api.get<any>('/users/me');
+    const data = response.data;
+    return {
+      name: `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.email,
+      email: data.email || '',
+      role: data.role || '',
+      memberSince: data.createdAt || '',
+    };
   }
 
   async createEvent(event: Omit<Event, 'id' | 'registeredCount' | 'organizerName'>): Promise<Event> {
-    // Utilisation du mapper toDTO pour formater correctement le corps de la requête
-    const body = EventMapper.toDTO(event);
-
-    const response = await this.api.post<EventDTO>('organizer/events', body);
-    return EventMapper.toDomain(response.data);
+    const startDate = event.date && event.time ? `${event.date}T${event.time}:00` : event.date;
+    const body = {
+      title: event.title,
+      description: event.description,
+      location: event.location,
+      startDate,
+      endDate: event.date ? `${event.date}T23:59:59` : undefined,
+      capacity: event.capacity,
+      status: event.status?.toUpperCase() || 'DRAFT',
+      categoryId: event.category || undefined,
+    };
+    const response = await this.api.post<any>('/events', body);
+    return this.toDomain(response.data);
   }
 
   async updateEvent(id: string, event: Partial<Event>): Promise<Event> {
-    // Utilisation dynamique de toDTO pour générer uniquement les champs modifiés
-    const body = EventMapper.toDTO(event);
-
-    const response = await this.api.patch<EventDTO>(`organizer/events/${id}`, body);
-    return EventMapper.toDomain(response.data);
+    const startDate = event.date && event.time ? `${event.date}T${event.time}:00` : undefined;
+    const body = {
+      title: event.title,
+      description: event.description,
+      location: event.location,
+      startDate,
+      endDate: event.date ? `${event.date}T23:59:59` : undefined,
+      capacity: event.capacity,
+      status: event.status?.toUpperCase(),
+      categoryId: event.category,
+    };
+    const response = await this.api.patch<any>(`/events/${id}`, body);
+    return this.toDomain(response.data);
   }
 }

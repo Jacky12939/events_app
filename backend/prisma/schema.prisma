@@ -18,7 +18,7 @@ enum Role {
 enum EventStatus {
   DRAFT
   PUBLISHED
-  CANCELLED
+  COMPLETED
 }
 
 model User {

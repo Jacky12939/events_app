@@ -56,15 +56,47 @@ export const App: React.FC = () => {
           }
         />
 
-        {/* Routes protégées Organisateur */}
-        <Route
-          path="/organizer/dashboard"
-          element={
-            <ProtectedRoute allowedRoles={["ORGANIZER"]}>
-              <OrganizerFeatureContainer />
-            </ProtectedRoute>
-          }
-        />
+{/* Routes protégées Organisateur */}
+         <Route
+           path="/organizer/dashboard"
+           element={
+             <ProtectedRoute allowedRoles={["ORGANIZER"]}>
+               <OrganizerFeatureContainer />
+             </ProtectedRoute>
+           }
+         />
+         <Route
+           path="/organizer/create"
+           element={
+             <ProtectedRoute allowedRoles={["ORGANIZER"]}>
+               <OrganizerFeatureContainer />
+             </ProtectedRoute>
+           }
+         />
+         <Route
+           path="/organizer/edit/:id"
+           element={
+             <ProtectedRoute allowedRoles={["ORGANIZER"]}>
+               <OrganizerFeatureContainer />
+             </ProtectedRoute>
+           }
+         />
+         <Route
+           path="/organizer/view/:id"
+           element={
+             <ProtectedRoute allowedRoles={["ORGANIZER"]}>
+               <OrganizerFeatureContainer />
+             </ProtectedRoute>
+           }
+         />
+         <Route
+           path="/organizer/profile"
+           element={
+             <ProtectedRoute allowedRoles={["ORGANIZER"]}>
+               <OrganizerFeatureContainer />
+             </ProtectedRoute>
+           }
+         />
 
         {/* Routes protégées Participant */}
         <Route
