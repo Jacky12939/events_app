@@ -16,7 +16,7 @@ export function useAuth() {
     try {
       const res = await authRepo.login(payload);
       // res.token (pas res.access_token) — aligné avec UserSessionEntity
-      localStorage.setItem('access_token', res.token);
+      localStorage.setItem('access_token', res.user?.token || res.token);
       localStorage.setItem('user', JSON.stringify(res.user));
       // Redirection selon le rôle
       const role = res.user.role;
@@ -35,7 +35,7 @@ export function useAuth() {
     setError(null);
     try {
       const res = await authRepo.register(payload);
-      localStorage.setItem('access_token', res.token);
+      localStorage.setItem('access_token', res.user?.token || res.token);
       localStorage.setItem('user', JSON.stringify(res.user));
       navigate('/events');
     } catch (e) {

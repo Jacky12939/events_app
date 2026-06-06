@@ -3,13 +3,15 @@ import type { AuthResponseDto } from '../dtos/AuthDto';
 
 export class AuthMapper {
   static toSessionEntity(dto: AuthResponseDto): UserSessionEntity {
-    const allowedRoles = ['ADMIN', 'ORGANIZER', 'PARTICIPANT'] as const;
-    const role = allowedRoles.includes(dto.user.role )
+    const allowedRoles = ['ADMIN', 'ORGANIZER', 'PARTICIPANT'];
+    const role = allowedRoles.includes(dto.user.role)
       ? (dto.user.role as 'ADMIN' | 'ORGANIZER' | 'PARTICIPANT')
       : 'PARTICIPANT';
 
+    const token = dto.access_token || dto.user?.token || '';
+
     return {
-      token: dto.access_token,
+      token,
       user: {
         id: dto.user.id,
         firstName: dto.user.firstName,
