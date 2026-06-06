@@ -25,12 +25,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email) return;
-    const tempPassword = await onAddOrganizer(name, email);
-    setCreatedCredentials({ 
-      email, 
-      password: tempPassword || 'NON FOURNI PAR LE BACKEND - Vérifiez la configuration serveur' 
-    });
-    setName(''); setEmail('');
+    const tempPassword = await onAddOrganizer(name, email); console.log("tempsPassword recu:", tempPassword);
+    if (tempPassword) {
+      setCreatedCredentials({ email, password: tempPassword });
+    }
+    setName("); setEmail(");
+
     setShowForm(false);
   };
 

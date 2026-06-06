@@ -79,22 +79,30 @@ export const useAdminData = () => {
       setLoading(false);
     }
   };
-
-  const addOrganizer = async (name: string, email: string) => {
+const addOrganizer = async (name: string, email: string) => {
     setLoading(true);
+    let passwordToReturn = undefined;
+
     try {
-      const result = await repo.createOrganizer(name, email);
-      await refreshAdminData();
-      if (!result.tempPassword) {
-        alert("Organisateur créé mais aucun mot de passe temporaire n'a été retourné par le serveur. Vérifiez la configuration du backend.");
-      }
-      return result.tempPassword;
+        const result = await repo.createOrganizer(name, email);
+       
+        // Ce log va grandement t'aider dans la console du navigateur (F12)
+        console.log("=== RÉPONSE DU SERVEUR ===", result);
+       
+        await refreshAdminData();
+
+        // Cette ligne tente de récupérer le mot de passe peu importe son nom (tempPassword ou password)
+        passwordToReturn = result?.tempPassword || result?.password || result?.data?.tempPassword || result?.data?.password;
+
+
     } catch (err) {
-      alert("Échec de création :" + (err instanceof Error ? err.message : "Erreur inconnue"));
+        alert("Échec de création : " + (err instanceof Error ? err.message : err));
     } finally {
-      setLoading(false);
+        setLoading(false);
     }
-  };
+
+    return passwordToReturn;
+};
 
   const removeUser = async (id: string) => {
     setLoading(true);
