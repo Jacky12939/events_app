@@ -15,15 +15,15 @@ export function useAuth() {
     setError(null);
     try {
       const res = await authRepo.login(payload);
-      // res.token (pas res.access_token) — aligné avec UserSessionEntity
-      localStorage.setItem('access_token', res.user?.token || res.token);
-      localStorage.setItem('user', JSON.stringify(res.user));
-      // Redirection selon le rôle
+      localStorage.setItem('access_token', res.token || res.user?.token || '');
+      // ✅ BUG 4 & 6 CORRIGÉ : ajout du champ "name" pour la Navbar
+      const userToStore = { ...res.user, name: `${res.user.firstName} ${res.user.lastName}`.trim() };
+      localStorage.setItem('user', JSON.stringify(userToStore));
       const role = res.user.role;
       if (role === 'ADMIN') navigate('/admin/dashboard');
       else if (role === 'ORGANIZER') navigate('/organizer/dashboard');
       else navigate('/events');
-    } catch (e) {
+    } catch (e: any) {
       setError(e.response?.data?.message || 'Email ou mot de passe incorrect');
     } finally {
       setLoading(false);
@@ -35,10 +35,16 @@ export function useAuth() {
     setError(null);
     try {
       const res = await authRepo.register(payload);
-      localStorage.setItem('access_token', res.user?.token || res.token);
-      localStorage.setItem('user', JSON.stringify(res.user));
-      navigate('/events');
-    } catch (e) {
+      localStorage.setItem('access_token', res.token || res.user?.token || '');
+      // ✅ BUG 4 & 6 CORRIGÉ : ajout du champ "name" pour la Navbar
+      const userToStore = { ...res.user, name: `${res.user.firstName} ${res.user.lastName}`.trim() };
+      localStorage.setItem('user', JSON.stringify(userToStore));
+      // ✅ BUG 5 CORRIGÉ : redirection par rôle après inscription
+      const role = res.user.role;
+      if (role === 'ADMIN') navigate('/admin/dashboard');
+      else if (role === 'ORGANIZER') navigate('/organizer/dashboard');
+      else navigate('/events');
+    } catch (e: any) {
       setError(e.response?.data?.message || "Erreur lors de l'inscription");
     } finally {
       setLoading(false);

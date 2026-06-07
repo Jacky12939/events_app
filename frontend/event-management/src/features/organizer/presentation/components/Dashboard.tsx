@@ -3,12 +3,20 @@ import { FiCalendar, FiEye, FiFileText, FiUsers, FiPlus, FiEdit, FiCheckCircle }
 import type { OrganizerStats , Event} from '../../domain/entities/Event';
 
 interface DashboardProps {
-  stats: OrganizerStats;
+  stats: OrganizerStats | null;
   events: Event[];
   onNavigate: (view: string, targetEvent?: Event) => void;
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ stats, events, onNavigate }) => {
+  const safeStats = stats || {
+    totalEvents: 0,
+    publishedEvents: 0,
+    draftEvents: 0,
+    completedEvents: 0,
+    totalRegistered: 0,
+  };
+
   return (
     <div className="max-w-6xl mx-auto p-4 sm:p-6 bg-slate-50 min-h-screen">
       
@@ -32,27 +40,27 @@ export const Dashboard: React.FC<DashboardProps> = ({ stats, events, onNavigate 
         <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center">
           <div>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total événements</p>
-            <h3 className="text-2xl font-black text-slate-800 mt-1">{stats.totalEvents}</h3>
+            <h3 className="text-2xl font-black text-slate-800 mt-1">{safeStats.totalEvents}</h3>
           </div>
           <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
             <FiCalendar className="w-4 h-4" />
           </div>
         </div>
         
-        <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center">
+<div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center">
           <div>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Publiés</p>
-            <h3 className="text-2xl font-black text-emerald-600 mt-1">{stats.publishedEvents}</h3>
+            <h3 className="text-2xl font-black text-emerald-600 mt-1">{safeStats.publishedEvents}</h3>
           </div>
           <div className="p-2.5 bg-emerald-50 text-emerald-600 rounded-xl">
             <FiEye className="w-4 h-4" />
           </div>
         </div>
-
+        
         <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center">
           <div>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Brouillons</p>
-            <h3 className="text-2xl font-black text-slate-700 mt-1">{stats.draftEvents}</h3>
+            <h3 className="text-2xl font-black text-slate-700 mt-1">{safeStats.draftEvents}</h3>
           </div>
           <div className="p-2.5 bg-slate-100 text-slate-600 rounded-xl">
             <FiFileText className="w-4 h-4" />
@@ -62,7 +70,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ stats, events, onNavigate 
         <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center">
           <div>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Terminés</p>
-            <h3 className="text-2xl font-black text-blue-600 mt-1">{stats.completedEvents || 0}</h3>
+            <h3 className="text-2xl font-black text-blue-600 mt-1">{safeStats.completedEvents}</h3>
           </div>
           <div className="p-2.5 bg-blue-50 text-blue-600 rounded-xl">
             <FiCheckCircle className="w-4 h-4" />
@@ -72,7 +80,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ stats, events, onNavigate 
         <div className="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm flex justify-between items-center">
           <div>
             <p className="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Total inscrits</p>
-            <h3 className="text-2xl font-black text-slate-800 mt-1">{stats.totalRegistered}</h3>
+            <h3 className="text-2xl font-black text-slate-800 mt-1">{safeStats.totalRegistered}</h3>
           </div>
           <div className="p-2.5 bg-indigo-50 text-indigo-600 rounded-xl">
             <FiUsers className="w-4 h-4" />
