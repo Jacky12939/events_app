@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { 
   FiCalendar, FiMapPin, FiSearch, FiSliders, FiLoader, FiAlertTriangle, FiUser, FiLogOut, FiArrowLeft, FiCheckCircle, FiUserCheck, FiDownload, FiLayers
 } from 'react-icons/fi';
+import { useNavigate } from 'react-router-dom';
 import { useParticipant } from '../hooks/useParticipantData';
-import { Navigate } from 'react-router-dom';
-// import { FiQrCode } from 'react-qr-code'
 
 export const ParticipantDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const {
     events, myTickets, profile, selectedEvent, loading, error, filters, successRegistration,
     setFilters, setSuccessRegistration, setSelectedEvent, loadDashboardData, viewEventDetails, registerToEvent
@@ -63,20 +63,20 @@ export const ParticipantDashboard: React.FC = () => {
             </button>
 
            <button
-              onClick={() => Navigate('/profile')}
-              className="
-                flex items-center gap-3
-                px-4 py-2
-                bg-indigo-50 dark:bg-indigo-950/40
-                border border-indigo-100 dark:border-indigo-900
-                rounded-xl
-                cursor-pointer
-                transition-all duration-300
-                hover:bg-indigo-100
-                dark:hover:bg-indigo-900/60
-                hover:shadow-md
-                hover:scale-105
-              "
+             onClick={() => setActiveTab('profile')}
+             className="
+               flex items-center gap-3
+               px-4 py-2
+               bg-indigo-50 dark:bg-indigo-950/40
+               border border-indigo-100 dark:border-indigo-900
+               rounded-xl
+               cursor-pointer
+               transition-all duration-300
+               hover:bg-indigo-100
+               dark:hover:bg-indigo-900/60
+               hover:shadow-md
+               hover:scale-105
+             "
             >
               <FiUserCheck className="text-indigo-600 dark:text-indigo-400 w-5 h-5" />
 
@@ -369,19 +369,19 @@ export const ParticipantDashboard: React.FC = () => {
                             <div><span className="block text-xs font-bold text-slate-400 uppercase tracking-wider">Participant</span><p className="text-slate-900 dark:text-white font-black text-lg">{profile?.fullName || 'Participant Demo'}</p><p className="text-base font-medium opacity-80">{profile?.email}</p></div>
                           </div>
 
-                          <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 text-center space-y-4">
-                            <span className="text-sm font-bold text-slate-400 uppercase tracking-wider block">Code QR d'accès</span>
-                            <div className="w-44 h-44 bg-white p-3 rounded-xl mx-auto shadow-sm border border-slate-100 flex items-center justify-center">
-                              <div className="w-full h-full border-4 border-dashed border-slate-900 flex items-center justify-center p-2">
-                                <div className="grid grid-cols-4 gap-1.5 w-full h-full">
-                                  {Array.from({ length: 16 }).map((_, i) => (
-                                    <div key={i} className={`rounded-sm ${(i % 2 === 0 || i % 3 === 0) ? 'bg-slate-900' : 'bg-transparent'}`} />
-                                  ))}
-                                </div>
-                              </div>
-                            </div>
-                            <p className="text-sm text-slate-400 font-medium">Présentez ce code QR à l'entrée de l'événement.</p>
-                          </div>
+                           <div className="bg-slate-50 dark:bg-slate-950 rounded-2xl p-6 border border-slate-100 dark:border-slate-800 text-center space-y-4">
+                             <span className="text-sm font-bold text-slate-400 uppercase tracking-wider block">Code QR d'accès</span>
+                             {ticket.qrCode ? (
+                               <div className="w-44 h-44 bg-white p-3 rounded-xl mx-auto shadow-sm border border-slate-100 flex items-center justify-center">
+                                 <img src={ticket.qrCode} alt="QR Code" className="w-full h-full object-contain" />
+                               </div>
+                             ) : (
+                               <div className="w-44 h-44 bg-slate-100 rounded-xl mx-auto flex items-center justify-center text-slate-400 text-xs">
+                                 QR indisponible
+                               </div>
+                             )}
+                             <p className="text-sm text-slate-400 font-medium">Présentez ce code QR à l'entrée de l'événement.</p>
+                           </div>
 
                           <button 
                             onClick={() => alert('Génération et téléchargement PDF du billet...')}

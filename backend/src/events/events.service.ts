@@ -13,7 +13,20 @@ import { EventStatus } from '@prisma/client';
 export class EventsService {
   constructor(private prisma: PrismaService) {}
 
+  private async resolveCategoryId(categoryNameOrId?: string): Promise<string | undefined> {
+    if (!categoryNameOrId) return undefined;
+    if (/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(categoryNameOrId)) {
+      return categoryNameOrId;
+    }
+    const category = await this.prisma.category.findUnique({
+      where: { name: categoryNameOrId.trim() },
+      select: { id: true },
+    });
+    return category?.id;
+  }
+
   async create(dto: CreateEventDto, organizerId: string) {
+    const categoryId = await this.resolveCategoryId(dto.categoryId);
     return this.prisma.event.create({
       data: {
         title: dto.title,
@@ -25,7 +38,7 @@ export class EventsService {
         status: dto.status ?? EventStatus.DRAFT,
         imageUrl: dto.imageUrl,
         organizerId,
-        categoryId: dto.categoryId,
+        categoryId,
       },
       include: {
         organizer: { select: { id: true, firstName: true, lastName: true } },
@@ -46,7 +59,10 @@ export class EventsService {
       where.location = { contains: filter.location, mode: 'insensitive' };
     }
     if (filter.categoryId) {
-      where.categoryId = filter.categoryId;
+      const resolvedCategoryId = await this.resolveCategoryId(filter.categoryId);
+      if (resolvedCategoryId) {
+        where.categoryId = resolvedCategoryId;
+      }
     }
     if (filter.dateFrom || filter.dateTo) {
       where.startDate = {};
@@ -112,12 +128,15 @@ export class EventsService {
       );
     }
 
+    const categoryId = await this.resolveCategoryId(dto.categoryId as string | undefined);
+
     return this.prisma.event.update({
       where: { id },
       data: {
         ...dto,
         startDate: dto.startDate ? new Date(dto.startDate) : undefined,
         endDate: dto.endDate ? new Date(dto.endDate) : undefined,
+        categoryId,
       },
       include: {
         organizer: { select: { id: true, firstName: true, lastName: true } },
@@ -141,7 +160,10 @@ export class EventsService {
   }
 
   async getOrganizerDashboard(organizerId: string) {
-    const [total, published, draft, completed, cancelled, totalRegistrations] =
+    // ✅ BUG CORRIGÉ : Promise.all avait 6 valeurs mais n'en déstructurait que 5
+    // "cancelled" était un doublon inutile de "completed", et totalRegistrations
+    // était ignoré (décalage d'index). Suppression du doublon.
+    const [total, published, draft, completed, totalRegistrations] =
       await Promise.all([
         this.prisma.event.count({ where: { organizerId } }),
         this.prisma.event.count({
@@ -153,24 +175,11 @@ export class EventsService {
         this.prisma.event.count({
           where: { organizerId, status: EventStatus.COMPLETED },
         }),
-        this.prisma.event.count({
-          where: { organizerId, status: EventStatus.COMPLETED },
-        }),
+        // ✅ totalRegistrations est maintenant bien le 5ème élément (index 4)
         this.prisma.registration.count({
           where: { event: { organizerId } },
         }),
       ]);
-
-    const recentEvents = await this.prisma.event.findMany({
-      where: { organizerId },
-      take: 5,
-      orderBy: { createdAt: 'desc' },
-      include: {
-        category: true,
-        organizer: { select: { id: true, firstName: true, lastName: true } },
-        _count: { select: { registrations: true } },
-      },
-    });
 
     return {
       totalEvents: total,

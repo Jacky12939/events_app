@@ -12,23 +12,23 @@ interface CreateOrganizerResponse {
 
 export class AdminRepositoryImpl implements AdminRepository {
 
-   async getStats(): Promise<AdminStats> {
-     const [usersResponse, eventsResponse] = await Promise.all([
-       api.get<UserDTO[]>('/users'),
-       api.get<AdminEventDTO[]>('/events'),
-     ]);
+    async getStats(): Promise<AdminStats> {
+      const [usersResponse, eventsResponse] = await Promise.all([
+        api.get<UserDTO[]>('/users'),
+        api.get<AdminEventDTO[]>('/events'),
+      ]);
 
-     const users = usersResponse.data.map(AdminMapper.toUserDomain);
-     
+      const users = usersResponse.data.map(AdminMapper.toUserDomain);
+      
 
-     return {
-      totalEvents: eventsResponse.data.length,
-      publishedEvents: eventsResponse.data.filter(e => e.status === 'published').length,
-      totalRegistrations: eventsResponse.data.reduce((sum, e) => sum + e.slotsTaken, 0),
-      organizerCount: users.filter(u => u.role === 'organisateur').length,
-      participantCount: users.filter(u => u.role === 'participant').length,
-    };
-   }
+      return {
+       totalEvents: eventsResponse.data.length,
+       publishedEvents: eventsResponse.data.filter(e => e.status === 'PUBLISHED').length,
+       totalRegistrations: eventsResponse.data.reduce((sum, e) => sum + (e._count?.registrations ?? 0), 0),
+       organizerCount: users.filter(u => u.role === 'organisateur').length,
+       participantCount: users.filter(u => u.role === 'participant').length,
+     };
+    }
 
   async getUsers(): Promise<BaseUser[]> {
     const response = await api.get<UserDTO[]>('/users');
@@ -71,7 +71,7 @@ export class AdminRepositoryImpl implements AdminRepository {
   }
 
   async getUserCreatedEvents(userId: string): Promise<AdminEventSummary[]> {
-    const response = await api.get<AdminEventDTO[]>(`/events?organizerId=${userId}`);
+    const response = await this.api.get<AdminEventDTO[]>(`/events/admin/organizer/${userId}`);
     return response.data.map(AdminMapper.toEventDomain);
   }
 
