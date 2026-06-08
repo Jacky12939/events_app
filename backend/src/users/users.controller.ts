@@ -1,9 +1,13 @@
 
+ 
+
 import {
+  Body,
   Controller,
   Get,
   Delete,
   Param,
+  Patch,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags, ApiBearerAuth, ApiOperation } from '@nestjs/swagger';
@@ -24,6 +28,12 @@ export class UsersController {
   @ApiOperation({ summary: 'Récupérer son profil connecté' })
   getMyProfile(@CurrentUser() user: any) {
     return this.usersService.getProfile(user.id);
+  }
+
+  @Patch('me')
+  @ApiOperation({ summary: 'Modifier son profil connecté' })
+  updateMyProfile(@CurrentUser() user: any, @Body() data: any) {
+    return this.usersService.updateProfile(user.id, data);
   }
 
   @Get()

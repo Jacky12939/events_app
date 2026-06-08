@@ -3,11 +3,14 @@ import type { ParticipantEventEntity, ParticipantProfileEntity } from '../../dom
 import type { EventFilterInput } from '../validations/participant.validation';
 import { ParticipantRepositoryImpl } from '../../data/repositories/participantImpl';
 
-
+export interface ParticipantTicket extends ParticipantEventEntity {
+  ticketNumber?: string;
+  registrationDate?: string;
+}
 
 export const useParticipant = () => {
   const [events, setEvents] = useState<ParticipantEventEntity[]>([]);
-  const [myTickets, setMyTickets] = useState<ParticipantEventEntity[]>([]);
+  const [myTickets, setMyTickets] = useState<ParticipantTicket[]>([]);
   const [profile, setProfile] = useState<ParticipantProfileEntity | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<ParticipantEventEntity | null>(null);
   
@@ -29,7 +32,7 @@ export const useParticipant = () => {
     setError(null);
     try {
       const [eventsData, ticketsData, profileData] = await Promise.all([
-        repo.getAvailableEvents(),
+        repo.getFilteredEvents(filters),
         repo.getMyTickets(),
         repo.getProfile(),
       ]);
@@ -41,7 +44,7 @@ export const useParticipant = () => {
     } finally {
       setLoading(false);
     }
-  }, [repo]);
+  }, [repo, filters]);
 
   const viewEventDetails = async (eventId: string) => {
     setLoading(true);
@@ -67,6 +70,19 @@ export const useParticipant = () => {
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : "Échec de l'inscription.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updateProfile = async (data: { firstName?: string; lastName?: string; email?: string }) => {
+    setLoading(true);
+    setError(null);
+    try {
+      const updated = await repo.updateProfile(data);
+      setProfile(updated);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Échec de la mise à jour du profil.');
     } finally {
       setLoading(false);
     }
@@ -98,5 +114,6 @@ export const useParticipant = () => {
     loadDashboardData,
     viewEventDetails,
     registerToEvent,
+    updateProfile,
   };
 };

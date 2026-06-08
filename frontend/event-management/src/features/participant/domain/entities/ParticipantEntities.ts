@@ -13,6 +13,7 @@ export interface ParticipantEventEntity {
   isRegistered: boolean;
   ticketNumber?: string;
   registrationDate?: string;
+  qrCode?: string;
 }
 
 export interface ParticipantProfileEntity {

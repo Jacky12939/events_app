@@ -3,37 +3,50 @@ import type { ParticipantEventDto, ParticipantProfileDto } from "../dto/particip
 
 export class ParticipantMapper {
   static toEventEntity(dto: ParticipantEventDto): ParticipantEventEntity {
-    const available = dto.max_capacity - dto.current_registered;
+    const registeredCount = dto._count?.registrations ?? 0;
+    const available = dto.capacity - registeredCount;
+    const organizerName = dto.organizer
+      ? `${dto.organizer.firstName} ${dto.organizer.lastName}`.trim()
+      : 'Eventory';
+    const startDate = new Date(dto.startDate);
     return {
-      id: dto.event_id.toString(),
-      title: dto.event_title,
-      date: dto.event_date,
-      time: dto.event_time,
-      location: dto.event_location,
-      category: dto.event_category,
-      description: dto.event_description,
-      registeredCount: dto.current_registered,
-      capacity: dto.max_capacity,
+      id: dto.id,
+      title: dto.title,
+      description: dto.description ?? '',
+      location: dto.location,
+      date: startDate.toISOString().split('T')[0],
+      time: startDate.toISOString().split('T')[1]?.substring(0, 5) ?? '',
+      category: dto.category?.name ?? 'Général',
+      capacity: dto.capacity,
+      registeredCount,
       availablePlaces: available < 0 ? 0 : available,
-      organizerName: dto.organizer_title,
-      isRegistered: dto.user_is_joined,
-      ticketNumber: dto.ticket_code,
-      registrationDate: dto.joined_at_date,
+      organizerName,
+      isRegistered: false,
+      qrCode: dto.qrCode,
+    };
+  }
+
+  static toTicketEntity(dto: { event: ParticipantEventDto; ticketCode?: string; joinedAtDate?: string; qrCode?: string }): ParticipantEventEntity & { ticketNumber?: string; registrationDate?: string } {
+    const base = ParticipantMapper.toEventEntity(dto.event);
+    return {
+      ...base,
+      ticketNumber: dto.ticketCode,
+      registrationDate: dto.joinedAtDate,
+      qrCode: dto.qrCode ?? base.qrCode,
     };
   }
 
   static toProfileEntity(dto: ParticipantProfileDto): ParticipantProfileEntity {
     return {
-      id: dto.uuid,
-      fullName: dto.full_name,
-      email: dto.email_address,
-      role: dto.user_role_title,
-      joinedDate: dto.created_timestamp,
-     
+      id: dto.id,
+      fullName: `${dto.firstName ?? ''} ${dto.lastName ?? ''}`.trim() || dto.email,
+      email: dto.email,
+      role: dto.role ?? 'PARTICIPANT',
+      joinedDate: dto.createdAt ?? '',
       stats: {
-        totalRegistered: dto.summary_stats?.registered_count ?? 0,
-        accountStatus: dto.summary_stats?.status_label === 'Active' ? 'Actif' : 'Inactif',
-        currentYear: dto.summary_stats?.active_year ?? new Date().getFullYear(),
+        totalRegistered: dto.summaryStats?.registeredCount ?? 0,
+        accountStatus: dto.summaryStats?.statusLabel === 'Active' ? 'Actif' : 'Inactif',
+        currentYear: dto.summaryStats?.activeYear ?? new Date().getFullYear(),
       },
     };
   }

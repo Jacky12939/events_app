@@ -8,7 +8,6 @@ import {
 import { AuthScreen } from "./features/Authentification/presentation/components/AuthScreen";
 import { ProtectedRoute } from "./shared/guards/ProtectedRoute";
 import { UnauthorizedPage } from "./shared/components/UnauthorizedPage";
-import Navbar from "./shared/components/Navbar";
 
 import { AdminFeatureContainer } from "./features/admin/presentation/AdminFeatureContainer";
 import { OrganizerFeatureContainer } from "./features/organizer/presentation/OrganizerFeatureContainer";
@@ -18,7 +17,6 @@ import LandingPage from "./features/Landing/presentation/LandingPage";
 export const App: React.FC = () => {
   return (
     <Router>
-      <Navbar />
       <Routes>
         <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<AuthScreen initialView="login" />} />

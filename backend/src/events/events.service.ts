@@ -59,7 +59,10 @@ export class EventsService {
       where.location = { contains: filter.location, mode: 'insensitive' };
     }
     if (filter.categoryId) {
-      where.categoryId = filter.categoryId;
+      const resolvedCategoryId = await this.resolveCategoryId(filter.categoryId);
+      if (resolvedCategoryId) {
+        where.categoryId = resolvedCategoryId;
+      }
     }
     if (filter.dateFrom || filter.dateTo) {
       where.startDate = {};

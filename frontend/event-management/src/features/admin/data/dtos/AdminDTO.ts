@@ -10,11 +10,15 @@ export interface UserDTO {
 export interface AdminEventDTO {
   id: string;
   title: string;
-  date: string;
-  slotsTaken: number;
-  slotsMax: number;
-  category: string;
-  status: 'published' | 'draft' | 'completed';
+  description?: string;
+  location: string;
+  startDate: string;
+  endDate?: string;
+  status: 'DRAFT' | 'PUBLISHED' | 'COMPLETED';
+  category?: { id: string; name: string } | null;
+  capacity: number;
+  _count?: { registrations: number };
+  organizer?: { firstName: string; lastName: string };
 }
 
 export interface AdminProfileDTO {

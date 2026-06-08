@@ -9,8 +9,8 @@ export class ParticipantRepositoryImpl implements ParticipantRepository {
 
   constructor() {
     this.api = axios.create({
-      
-      baseURL: import.meta.env.VITE_API_BASE_URL ,
+      baseURL: import.meta.env.VITE_API_BASE_URL,
+      withCredentials: true,
       headers: { 'Content-Type': 'application/json' },
     });
 
@@ -25,7 +25,19 @@ export class ParticipantRepositoryImpl implements ParticipantRepository {
   }
 
   async getAvailableEvents(): Promise<ParticipantEventEntity[]> {
-    const response = await this.api.get<ParticipantEventDto[]>('/events');
+    return [];
+  }
+
+  async getFilteredEvents(filters: { title?: string; category?: string; location?: string; date?: string }): Promise<ParticipantEventEntity[]> {
+    const params: Record<string, string> = {};
+    if (filters.title) params.title = filters.title;
+    if (filters.category) params.categoryId = filters.category;
+    if (filters.location) params.location = filters.location;
+    if (filters.date) {
+      params.dateFrom = filters.date;
+      params.dateTo = filters.date;
+    }
+    const response = await this.api.get<ParticipantEventDto[]>('/events', { params });
     return response.data.map(ParticipantMapper.toEventEntity);
   }
 
@@ -35,20 +47,25 @@ export class ParticipantRepositoryImpl implements ParticipantRepository {
   }
 
   async registerToEvent(eventId: string): Promise<{ success: boolean; ticketNumber?: string }> {
-    const response = await this.api.post<{ success: boolean; ticket_code?: string }>(`/registrations/events/${eventId}`);
+    const response = await this.api.post<{ message: string; ticket: { ticketCode: string } }>(`/registrations/events/${eventId}`);
     return {
-      success: response.data.success,
-      ticketNumber: response.data.ticket_code,
+      success: true,
+      ticketNumber: response.data.ticket?.ticketCode,
     };
   }
 
-  async getMyTickets(): Promise<ParticipantEventEntity[]> {
-    const response = await this.api.get<ParticipantEventDto[]>('/registrations/my');
-    return response.data.map(ParticipantMapper.toEventEntity);
+  async getMyTickets(): Promise<(ParticipantEventEntity & { ticketNumber?: string; registrationDate?: string; qrCode?: string })[]> {
+    const response = await this.api.get<{ event: ParticipantEventDto; ticketCode?: string; joinedAtDate?: string; qrCode?: string }[]>('/registrations/my');
+    return response.data.map((item) => ParticipantMapper.toTicketEntity(item));
   }
 
   async getProfile(): Promise<ParticipantProfileEntity> {
     const response = await this.api.get<ParticipantProfileDto>('/users/me');
+    return ParticipantMapper.toProfileEntity(response.data);
+  }
+
+  async updateProfile(data: { firstName?: string; lastName?: string; email?: string }): Promise<ParticipantProfileEntity> {
+    const response = await this.api.patch<ParticipantProfileDto>('/users/me', data);
     return ParticipantMapper.toProfileEntity(response.data);
   }
 }

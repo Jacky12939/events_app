@@ -18,14 +18,15 @@ export class AdminMapper {
   }
 
   static toEventDomain(dto: AdminEventDTO): AdminEventSummary {
+    const startDate = new Date(dto.startDate);
     return {
       id: dto.id,
       title: dto.title,
-      date: dto.date,
-      registeredCount: dto.slotsTaken,
-      capacity: dto.slotsMax,
-      category: dto.category,
-      status: dto.status,
+      date: startDate.toISOString().split('T')[0],
+      registeredCount: dto._count?.registrations ?? 0,
+      capacity: dto.capacity,
+      category: dto.category?.name ?? 'Général',
+      status: dto.status.toLowerCase() as AdminEventSummary['status'],
     };
   }
 

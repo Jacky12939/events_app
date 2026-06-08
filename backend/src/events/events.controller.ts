@@ -51,6 +51,15 @@ export class EventsController {
     return this.eventsService.findByOrganizer(user.id, filter);
   }
 
+  @Get('admin/organizer/:organizerId')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Événements d\'un organisateur donné (Admin uniquement)' })
+  findAllByOrganizer(@Param('organizerId') organizerId: string) {
+    return this.eventsService.findByOrganizer(organizerId, {});
+  }
+
   @Get(':id')
   @ApiOperation({ summary: 'Détail d\'un événement' })
   findOne(@Param('id') id: string) {
