@@ -2,11 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { 
   FiCalendar, FiMapPin, FiSearch, FiSliders, FiLoader, FiAlertTriangle, FiUser, FiLogOut, FiArrowLeft, FiCheckCircle, FiUserCheck, FiDownload, FiLayers
 } from 'react-icons/fi';
-import { useNavigate } from 'react-router-dom';
+// import { useNavigate } from 'react-router-dom';
 import { useParticipant } from '../hooks/useParticipantData';
+import logo1 from '../../../../../assets/logo1.png';
 
 export const ParticipantDashboard: React.FC = () => {
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
   const {
     events, myTickets, profile, selectedEvent, loading, error, filters, successRegistration,
     setFilters, setSuccessRegistration, setSelectedEvent, loadDashboardData, viewEventDetails, registerToEvent
@@ -35,12 +36,12 @@ export const ParticipantDashboard: React.FC = () => {
       <nav className="sticky top-0 z-40 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm h-22 flex items-center">
         <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 flex justify-between items-center">
           <div className="flex items-center gap-3 cursor-pointer" onClick={() => { setSelectedEvent(null); setSuccessRegistration(false); setActiveTab('discover'); }}>
-            <div className="w-11 h-11 bg-indigo-600 rounded-xl flex items-center justify-center text-white shadow-md">
-              <FiCalendar className="w-6 h-6" />
+            <div className="cursor-pointer">
+              <img src={logo1} alt="Logo" className="w-24 h-16" />
             </div>
-            <span className="text-2xl font-black tracking-tight bg-gradient-to-r from-indigo-600 to-blue-500 bg-clip-text text-transparent dark:from-indigo-400">
-              Eventory
-            </span>
+            <span className="text-lg sm:text-xl font-black tracking-tight text-slate-900 dark:text-white transition-colors group-hover:text-indigo-600 dark:group-hover:text-indigo-400 -ml-6 sm:-ml-8 select-none">
+            ventory
+          </span>
           </div>
           
           <div className="flex items-center gap-4">
@@ -266,7 +267,6 @@ export const ParticipantDashboard: React.FC = () => {
                       className="bg-transparent text-lg w-full focus:outline-none font-extrabold text-slate-700 dark:text-slate-300 cursor-pointer"
                     >
                       <option value="">Catégorie</option>
-                      <option value="Atelier">Atelier</option>
                       <option value="Conférence">Conférence</option>
                       <option value="Formation">Formation</option>
                     </select>

@@ -33,7 +33,7 @@ export class EventRepositoryImpl implements EventRepository {
     );
   }
 
-  private toDomain = (event: any): Event => ({
+  private toDomain = (event): Event => ({
     id: event.id,
     title: event.title || '',
     description: event.description || '',
@@ -50,17 +50,17 @@ export class EventRepositoryImpl implements EventRepository {
   });
 
   async getDashboardData(): Promise<OrganizerDashboardData> {
-    const response = await this.api.get<any[]>('/events/organizer/my-events');
+    const response = await this.api.get<[]>('/events/organizer/my-events');
     return { recentEvents: response.data.map(this.toDomain) };
   }
 
   async getEvents(): Promise<Event[]> {
-    const response = await this.api.get<any[]>('/events/organizer/my-events');
+    const response = await this.api.get<[]>('/events/organizer/my-events');
     return response.data.map(this.toDomain);
   }
 
   async getStats(): Promise<OrganizerStats> {
-    const response = await this.api.get<any>('/events/organizer/dashboard');
+    const response = await this.api.get<OrganizerStats>('/events/organizer/dashboard');
     const data = response.data;
     return {
       totalEvents: data.totalEvents ?? 0,
@@ -72,10 +72,10 @@ export class EventRepositoryImpl implements EventRepository {
   }
 
   async getProfile(): Promise<OrganizerProfile> {
-    const response = await this.api.get<any>('/users/me');
+    const response = await this.api.get<OrganizerProfile>('/users/me');
     const data = response.data;
     return {
-      name: `${data.firstName || ''} ${data.lastName || ''}`.trim() || data.email,
+      name: `${data.name || ''} `.trim() || data.email,
       email: data.email || '',
       role: data.role || '',
       memberSince: data.createdAt || '',
@@ -91,7 +91,7 @@ export class EventRepositoryImpl implements EventRepository {
 
     // N'envoyer QUE les champs déclarés dans le DTO backend
     // forbidNonWhitelisted:true rejette tout champ inconnu
-    const body: Record<string, any> = {
+    const body: Record<string, unknown> = {
       title: String(event.title).trim(),
       description: String(event.description).trim(),
       location: String(event.location).trim(),
@@ -109,14 +109,14 @@ export class EventRepositoryImpl implements EventRepository {
 
     // NE PAS envoyer imageUrl si absent (évite @IsUrl() sur undefined)
 
-    const response = await this.api.post<any>('/events', body);
+    const response = await this.api.post<Event>('/events', body);
     return this.toDomain(response.data);
   }
 
   async updateEvent(id: string, event: Partial<Event>): Promise<Event> {
     // UpdateEventDto = PartialType(CreateEventDto) → tous les champs optionnels
     // On n'envoie que ce qui est défini et non vide
-    const body: Record<string, any> = {};
+    const body: Record<string, unknown> = {};
 
     if (event.title !== undefined && String(event.title).trim())
       body.title = String(event.title).trim();
@@ -143,7 +143,7 @@ export class EventRepositoryImpl implements EventRepository {
       body.endDate = new Date(`${event.date}T23:59:59`).toISOString();
     }
 
-    const response = await this.api.patch<any>(`/events/${id}`, body);
+    const response = await this.api.patch<Event>(`/events/${id}`, body);
     return this.toDomain(response.data);
   }
 }
