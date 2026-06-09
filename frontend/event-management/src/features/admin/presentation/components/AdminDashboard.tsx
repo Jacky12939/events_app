@@ -73,11 +73,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
           <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-slate-50 dark:bg-slate-900/60 p-5 rounded-xl border border-slate-200/60 dark:border-slate-700">
             <div>
               <label className="block text-xs font-bold uppercase mb-1.5 text-slate-400">Nom complet</label>
-              <input type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="Jean Dupont" className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <input type="text" required value={name} onChange={e => setName(e.target.value)} placeholder="nom organisateur" className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div>
               <label className="block text-xs font-bold uppercase mb-1.5 text-slate-400">Email</label>
-              <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="jean@example.com" className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
+              <input type="email" required value={email} onChange={e => setEmail(e.target.value)} placeholder="email organisateur" className="w-full px-4 py-2.5 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500" />
             </div>
             <div className="flex items-end gap-2">
               <button type="submit" className="flex-1 bg-blue-600 text-white font-bold text-xs py-3 rounded-lg hover:bg-blue-700">Créer</button>
